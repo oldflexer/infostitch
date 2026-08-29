@@ -14,11 +14,14 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Index,
+    Integer,
+    JSON,
     String,
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import JSONB, VECTOR
+from sqlalchemy.dialects.postgresql import JSONB
+from pgvector.sqlalchemy import Vector as VECTOR
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -36,7 +39,7 @@ class Base(DeclarativeBase):
     # SQLite doesn't support JSONB, use JSON instead
     # PostgreSQL will use JSONB via dialect-specific type
     type_annotation_map = {
-        Dict[str, Any]: JSONB().with_variant(JSONB, "postgresql"),
+        Dict[str, Any]: JSON().with_variant(JSONB, "postgresql"),
         List[float]: VECTOR(768).with_variant(VECTOR(768), "postgresql"),
     }
 
@@ -52,7 +55,9 @@ class RssSource(Base):
     __tablename__ = "rss_sources"
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
     )
     url: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -78,7 +83,9 @@ class Channel(Base):
     __tablename__ = "channels"
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
     )
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     type: Mapped[str] = mapped_column(String(20), nullable=False)  # telegram, vk, max
@@ -94,6 +101,9 @@ class Channel(Base):
     )
 
     def __repr__(self) -> str:
+        return f"<Channel(id={self.id}, name={self.name}, type={self.type})>"
+
+
 class Setting(Base):
     """Dynamic configuration key-value store."""
 
@@ -119,7 +129,9 @@ class PublishedPost(Base):
     __tablename__ = "published_posts"
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
     )
     clean_url: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -171,7 +183,9 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
     )
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -196,8 +210,35 @@ class Log(Base):
     __tablename__ = "logs"
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
     )
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+    level: Mapped[str] = mapped_column(String(10), nullable=False)
+    module: Mapped[str] = mapped_column(String(100), nullable=False)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    context_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(nullable=True)
+    user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+
+    # Relationships
+    user: Mapped[Optional["User"]] = relationship(back_populates="logs")
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_logs_timestamp", "timestamp"),
+        Index("ix_logs_level", "level"),
+        Index("ix_logs_module", "module"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Log(id={self.id}, level={self.level}, module={self.module})>"
+
+
 # =============================================================================
 # Database Engine & Session Helpers
 # =============================================================================
@@ -286,7 +327,9 @@ class LLMModel(Base):
     __tablename__ = "llm_models"
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
     )
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     provider: Mapped[str] = mapped_column(String(30), nullable=False)

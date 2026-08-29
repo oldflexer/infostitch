@@ -6,7 +6,7 @@ from typing import List, Optional
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from passlib.hash import bcrypt
+import bcrypt
 
 from domain.entities.user import User
 from domain.repositories.user_repo import UserRepository
@@ -42,7 +42,8 @@ class SqlAlchemyUserRepository(UserRepository):
     async def create(
         self, username: str, password: str, role: str = "admin"
     ) -> User:
-        password_hash = bcrypt.hash(password)
+        # Use bcrypt directly to avoid passlib issues
+        password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         model = UserModel(
             username=username,
             password_hash=password_hash,
@@ -91,7 +92,7 @@ class SqlAlchemyUserRepository(UserRepository):
 
     async def verify_password(self, username: str, password: str) -> Optional[User]:
         user = await self.get_by_username(username)
-        if user and bcrypt.verify(password, user.password_hash):
+        if user and bcrypt.checkpw(password.encode("utf-8"), user.password_hash.encode("utf-8")):
             return user
         return None
 

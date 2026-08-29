@@ -72,7 +72,7 @@ class Settings(BaseSettings):
         default="0.0.0.0", alias="STREAMLIT_SERVER_ADDRESS"
     )
     admin_username: str = Field(default="admin", alias="ADMIN_USERNAME")
-    admin_password: str = Field(default="change_me_123", alias="ADMIN_PASSWORD")
+    admin_password: str = Field(default="admin123", alias="ADMIN_PASSWORD")
 
     @property
     def is_development(self) -> bool:
@@ -117,6 +117,10 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    """Get cached settings instance."""
+    return Settings()
+
+
 class DatabaseSettings:
     """Settings loaded from database settings table.
 
@@ -195,5 +199,3 @@ DEFAULT_SETTINGS = {
     "notification_chat_id": "",
     "cleanup_retention_days": "90",
 }
-    """Get cached settings instance."""
-    return Settings()

@@ -16,6 +16,9 @@ from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelReposit
 from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository
 from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
 from infrastructure.db.repositories.user_repo import SqlAlchemyUserRepository
+from domain.entities.rss_source import RssSource
+from domain.entities.channel import Channel
+from domain.entities.llm_model import LLMModel
 
 
 async def seed_settings(session: AsyncSession) -> None:
@@ -60,7 +63,8 @@ async def seed_rss_sources(session: AsyncSession) -> None:
     for url in sources:
         existing = await repo.get_by_url(url)
         if not existing:
-            await repo.add(url=url, enabled=True)
+            source = RssSource(url=url, enabled=True)
+            await repo.add(source)
             print(f"✓ RSS source added: {url}")
         else:
             print(f"✓ RSS source exists: {url}")
@@ -77,12 +81,8 @@ async def seed_channels(session: AsyncSession) -> None:
         name = f"{ch_type.capitalize()} Channel"
         existing = await repo.get_by_name(name)
         if not existing:
-            await repo.add(
-                name=name,
-                type=ch_type,
-                enabled=True,
-                config=config,
-            )
+            channel = Channel(name=name, type=ch_type, enabled=True, config=config)
+            await repo.add(channel)
             print(f"✓ Channel added: {name} ({ch_type})")
         else:
             print(f"✓ Channel exists: {name}")
@@ -94,27 +94,27 @@ async def seed_llm_models(session: AsyncSession) -> None:
     settings = get_settings()
 
     models = [
-        {
-            "name": "gemini-1.5-flash",
-            "provider": "gemini",
-            "model_id": "gemini-1.5-flash-latest",
-            "api_key_ref": "GEMINI_API_KEY",
-        },
-        {
-            "name": "gemini-1.5-pro",
-            "provider": "gemini",
-            "model_id": "gemini-1.5-pro-latest",
-            "api_key_ref": "GEMINI_API_KEY",
-        },
+        LLMModel(
+            name="gemini-1.5-flash",
+            provider="gemini",
+            model_id="gemini-1.5-flash-latest",
+            api_key_ref="GEMINI_API_KEY",
+        ),
+        LLMModel(
+            name="gemini-1.5-pro",
+            provider="gemini",
+            model_id="gemini-1.5-pro-latest",
+            api_key_ref="GEMINI_API_KEY",
+        ),
     ]
 
     for model in models:
-        existing = await repo.get_by_name(model["name"])
+        existing = await repo.get_by_name(model.name)
         if not existing:
-            await repo.add(**model)
-            print(f"✓ LLM model added: {model['name']}")
+            await repo.add(model)
+            print(f"✓ LLM model added: {model.name}")
         else:
-            print(f"✓ LLM model exists: {model['name']}")
+            print(f"✓ LLM model exists: {model.name}")
 
 
 async def main() -> None:

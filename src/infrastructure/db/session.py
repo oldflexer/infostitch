@@ -50,8 +50,11 @@ class DatabaseManager:
         url = self._database_url
 
         if url.startswith("sqlite"):
-            # Convert to async SQLite URL
-            async_url = url.replace("sqlite://", "sqlite+aiosqlite://")
+            # Handle both sqlite:// and sqlite+aiosqlite://
+            if url.startswith("sqlite://"):
+                async_url = url.replace("sqlite://", "sqlite+aiosqlite://")
+            else:
+                async_url = url
             engine = create_async_engine(
                 async_url,
                 connect_args={"check_same_thread": False},
@@ -59,8 +62,11 @@ class DatabaseManager:
                 echo=False,
             )
         else:
-            # Convert to async PostgreSQL URL
-            async_url = url.replace("postgresql://", "postgresql+asyncpg://")
+            # Handle both postgresql:// and postgresql+asyncpg://
+            if url.startswith("postgresql://"):
+                async_url = url.replace("postgresql://", "postgresql+asyncpg://")
+            else:
+                async_url = url
             engine = create_async_engine(
                 async_url,
                 pool_pre_ping=True,
