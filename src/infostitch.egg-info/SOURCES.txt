@@ -1,7 +1,0 @@
-README.md
-pyproject.toml
-src/infostitch.egg-info/PKG-INFO
-src/infostitch.egg-info/SOURCES.txt
-src/infostitch.egg-info/dependency_links.txt
-src/infostitch.egg-info/requires.txt
-src/infostitch.egg-info/top_level.txt
