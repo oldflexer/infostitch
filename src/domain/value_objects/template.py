@@ -95,7 +95,10 @@ TEMPLATES = {
             "- Only facts from the article\n"
             "- Length: {min_length}-{max_length} characters\n"
             "- One emoji\n"
-"expert_opinion": Template(
+        ),
+        variables=["title", "summary", "content", "min_length", "max_length"],
+    ),
+    "expert_opinion": Template(
         id="expert_opinion",
         name="Expert Opinion",
         description="Expert commentary style",
@@ -244,13 +247,3 @@ def get_all_templates() -> List[Template]:
 def get_template_ids() -> List[str]:
     """Get all template IDs."""
     return list(TEMPLATES.keys())
-            "- One HTML <b> tag\n"
-            "- No markdown, no links, no signature\n"
-            "- Russian language\n\n"
-            "Title: {title}\n"
-            "Summary: {summary}\n"
-            "Content: {content}"
-        ),
-        variables=["title", "summary", "content", "min_length", "max_length"],
-    ),
-}

@@ -30,6 +30,11 @@ class PostRepository(ABC):
         ...
 
     @abstractmethod
+    async def exists_by_url(self, clean_url: str) -> bool:
+        """Check if post exists by clean URL."""
+        ...
+
+    @abstractmethod
     async def get_recent(
         self, days: int = 5, limit: int = 100, exclude_duplicates: bool = True
     ) -> List[Post]:

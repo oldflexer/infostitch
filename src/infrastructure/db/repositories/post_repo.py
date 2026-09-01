@@ -78,7 +78,12 @@ class SqlAlchemyPostRepository(PostRepository):
 
     async def get_by_id(self, post_id: int) -> Optional[Post]:
         """Get post by ID."""
-async def get_recent(
+        stmt = select(PublishedPostModel).where(PublishedPostModel.id == post_id)
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return self._to_entity(model) if model else None
+
+    async def get_recent(
         self, days: int = 5, limit: int = 100, exclude_duplicates: bool = True
     ) -> List[Post]:
         """Get recent posts."""
@@ -132,7 +137,14 @@ async def get_recent(
         stmt = (
             select(PublishedPostModel)
             .where(PublishedPostModel.is_duplicate == True)
-async def update(self, post: Post) -> Post:
+            .order_by(PublishedPostModel.created_at.desc())
+            .limit(limit)
+        )
+        result = await self._session.execute(stmt)
+        models = result.scalars().all()
+        return [self._to_entity(m) for m in models]
+
+    async def update(self, post: Post) -> Post:
         """Update an existing post."""
         model = await self._session.get(PublishedPostModel, post.id)
         if not model:
@@ -229,6 +241,23 @@ async def update(self, post: Post) -> Post:
                 return self._to_entity(best_match)
             return None
 
+    async def get_by_clean_url(self, clean_url: str) -> Optional[Post]:
+        """Get post by clean URL (for deduplication)."""
+        stmt = select(PublishedPostModel).where(
+            PublishedPostModel.clean_url == clean_url
+        )
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return self._to_entity(model) if model else None
+
+    async def exists_by_url(self, clean_url: str) -> bool:
+        """Check if post exists by clean URL."""
+        stmt = select(PublishedPostModel.id).where(
+            PublishedPostModel.clean_url == clean_url
+        )
+        result = await self._session.execute(stmt)
+        return result.scalar_one_or_none() is not None
+
     async def count_recent(self, days: int = 5) -> int:
         """Count recent posts."""
         from datetime import datetime, timezone, timedelta
@@ -253,16 +282,6 @@ async def update(self, post: Post) -> Post:
         )
         result = await self._session.execute(stmt)
         return result.rowcount
-            .order_by(PublishedPostModel.created_at.desc())
-            .limit(limit)
-        )
-        result = await self._session.execute(stmt)
-        models = result.scalars().all()
-        return [self._to_entity(m) for m in models]
-        stmt = select(PublishedPostModel).where(PublishedPostModel.id == post_id)
-        result = await self._session.execute(stmt)
-        model = result.scalar_one_or_none()
-        return self._to_entity(model) if model else None
 
     async def get_by_clean_url(self, clean_url: str) -> Optional[Post]:
         """Get post by clean URL (for deduplication)."""
