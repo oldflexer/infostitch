@@ -514,10 +514,46 @@ def image_service(mock_jina_client) -> Any:
 
 
 @pytest.fixture
-def publisher_service() -> Any:
-    """Create PublisherService with mock clients (auto-creates mocks in test env)."""
+def publisher_service(test_settings, mock_telegram_client, mock_vk_client, mock_max_client) -> Any:
+    """Create PublisherService with test settings and mock clients."""
     from application.services.publisher_service import PublisherService
-    return PublisherService()
+    from infrastructure.config import Settings
+    # Patch get_settings in both the config module AND the publisher_service module
+    # because publisher_service imports get_settings directly
+    import infrastructure.config as config_module
+    import application.services.publisher_service as publisher_module
+    original_get_settings = config_module.get_settings
+    # test_settings is already a Settings object (fixture returns it)
+    # Clear the lru_cache on the original function
+    original_get_settings.cache_clear()
+    # Create a new cached function
+    from functools import lru_cache
+    @lru_cache
+    def patched_get_settings():
+        result = test_settings  # test_settings is already a Settings object
+        print(f"DEBUG patched_get_settings: returning settings with app_env={result.app_env}")
+        configs = result.get_channel_configs()
+        print(f"DEBUG patched_get_settings: configs = {configs}")
+        return result
+    # Patch in both modules
+    config_module.get_settings = patched_get_settings
+    publisher_module.get_settings = patched_get_settings
+    try:
+        print(f"DEBUG: Creating PublisherService with clients: telegram={type(mock_telegram_client)}, vk={type(mock_vk_client)}, max={type(mock_max_client)}")
+        print(f"DEBUG: get_settings in config_module: {config_module.get_settings}")
+        print(f"DEBUG: get_settings in publisher_module: {publisher_module.get_settings}")
+        service = PublisherService(
+            telegram_client=mock_telegram_client,
+            vk_client=mock_vk_client,
+            max_client=mock_max_client,
+        )
+        print(f"DEBUG: Created service with publishers: {list(service._publishers.keys())}")
+        return service
+    finally:
+        # Restore original function
+        config_module.get_settings = original_get_settings
+        publisher_module.get_settings = original_get_settings
+        original_get_settings.cache_clear()
 
 
 @pytest.fixture

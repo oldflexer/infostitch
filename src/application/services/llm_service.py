@@ -80,6 +80,9 @@ class MockLLMProvider(LLMProvider):
             return json.dumps([1, 2, 3, 4, 5])
         if "template" in prompt.lower() or "generate" in prompt.lower():
             return "📰 Test post content with <b>emphasis</b>. This is a test article summary."
+        if response_format == "json":
+            import json
+            return json.dumps({"test": "value", "status": "ok"})
         return "Mock response"
 
     async def close(self) -> None:

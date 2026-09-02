@@ -116,20 +116,32 @@ class MaxPublisher(PublisherClient):
 class PublisherService:
     """Service for publishing to multiple channels."""
 
-    def __init__(self):
+    def __init__(
+        self,
+        telegram_client: Optional[TelegramClient] = None,
+        vk_client: Optional[VKClient] = None,
+        max_client: Optional[MaxClient] = None,
+    ):
         self._publishers: Dict[str, PublisherClient] = {}
+        self._telegram_client = telegram_client
+        self._vk_client = vk_client
+        self._max_client = max_client
         self._init_publishers()
 
     def _init_publishers(self) -> None:
         settings = get_settings()
         configs = settings.get_channel_configs()
+        print(f"DEBUG _init_publishers: configs = {configs}")
 
         if "telegram" in configs:
-            self._publishers["telegram"] = TelegramPublisher()
+            print("DEBUG: Creating TelegramPublisher")
+            self._publishers["telegram"] = TelegramPublisher(client=self._telegram_client)
         if "vk" in configs:
-            self._publishers["vk"] = VKPublisher()
+            print("DEBUG: Creating VKPublisher")
+            self._publishers["vk"] = VKPublisher(client=self._vk_client)
         if "max" in configs:
-            self._publishers["max"] = MaxPublisher()
+            print("DEBUG: Creating MaxPublisher")
+            self._publishers["max"] = MaxPublisher(client=self._max_client)
 
     def get_publisher(self, channel_type: str) -> Optional[PublisherClient]:
         """Get publisher for channel type."""
