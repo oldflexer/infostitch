@@ -82,9 +82,19 @@ class URL:
         return urlparse(self.value).netloc
 
     @property
+    def scheme(self) -> str:
+        """Extract scheme from URL."""
+        return urlparse(self.value).scheme
+
+    @property
     def path(self) -> str:
         """Extract path from URL."""
         return urlparse(self.value).path
+
+    @property
+    def query(self) -> str:
+        """Extract query string from URL."""
+        return urlparse(self.value).query
 
     @classmethod
     def from_string(cls, url: str) -> URL:
