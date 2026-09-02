@@ -30,25 +30,42 @@ class CheckEmbeddingDuplicateStep(PipelineStep):
         for i, (post_data, embedding) in enumerate(
             zip(context.generated_posts, context.post_embeddings)
         ):
-            # Check semantic duplicate
-            duplicate = await self._dedup_service.is_duplicate_by_embedding(embedding)
+            try:
+                # Check semantic duplicate
+                duplicate = await self._dedup_service.is_duplicate_by_embedding(embedding)
 
-            if duplicate:
-                # Mark as duplicate
-                post = Post(
-                    title=post_data["title"],
-                    summary=post_data["summary"],
-                    content=post_data["post_text"],
-                    clean_url=post_data["clean_url"],
-                    embedding=embedding,
-                    image_url=post_data.get("image_url"),
-                    is_duplicate=True,
-                    source_id=post_data.get("source_id"),
-                    template_id=post_data.get("template_id"),
-                )
-                duplicate_posts.append(post)
-            else:
-                # Create final post
+                if duplicate:
+                    # Mark as duplicate
+                    post = Post(
+                        title=post_data["title"],
+                        summary=post_data["summary"],
+                        content=post_data["post_text"],
+                        clean_url=post_data["clean_url"],
+                        embedding=embedding,
+                        image_url=post_data.get("image_url"),
+                        is_duplicate=True,
+                        source_id=post_data.get("source_id"),
+                        template_id=post_data.get("template_id"),
+                    )
+                    duplicate_posts.append(post)
+                else:
+                    # Create final post
+                    post = Post(
+                        title=post_data["title"],
+                        summary=post_data["summary"],
+                        content=post_data["post_text"],
+                        clean_url=post_data["clean_url"],
+                        embedding=embedding,
+                        image_url=post_data.get("image_url"),
+                        is_duplicate=False,
+                        source_id=post_data.get("source_id"),
+                        template_id=post_data.get("template_id"),
+                    )
+                    final_posts.append(post)
+
+            except Exception as e:
+                context.add_error(self.name, f"Post {post_data.get('clean_url', i)}: {e}")
+                # On error, treat as non-duplicate to continue pipeline
                 post = Post(
                     title=post_data["title"],
                     summary=post_data["summary"],

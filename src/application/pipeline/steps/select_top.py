@@ -29,27 +29,37 @@ class SelectTopStep(PipelineStep):
         if not articles:
             context.selected_articles = []
             context.selected_article_indices = []
+            context.add_metric("selected_count", 0)
             return context
 
-        # Prepare articles for LLM
-        articles_for_llm = context.get_articles_for_selection()
-        recent_titles = context.get_recent_titles(limit=10)
+        try:
+            # Prepare articles for LLM
+            articles_for_llm = context.get_articles_for_selection()
+            recent_titles = context.get_recent_titles(limit=10)
 
-        # Get LLM ranking
-        selected_indices = await self._llm_service.rank_articles(
-            articles=articles_for_llm,
-            recent_titles=recent_titles,
-            max_count=self._max_articles,
-        )
+            # Get LLM ranking
+            selected_indices = await self._llm_service.rank_articles(
+                articles=articles_for_llm,
+                recent_titles=recent_titles,
+                max_count=self._max_articles,
+            )
 
-        # Convert to 0-based indices and get selected articles
-        selected_articles = []
-        for idx in selected_indices:
-            if 1 <= idx <= len(articles):
-                selected_articles.append(articles[idx - 1])
+            # Limit to max_articles
+            selected_indices = selected_indices[:self._max_articles]
 
-        context.selected_article_indices = selected_indices
-        context.selected_articles = selected_articles
-        context.add_metric("selected_count", len(selected_articles))
+            # Convert to 0-based indices and get selected articles
+            selected_articles = []
+            for idx in selected_indices:
+                if 1 <= idx <= len(articles):
+                    selected_articles.append(articles[idx - 1])
+
+            context.selected_article_indices = selected_indices
+            context.selected_articles = selected_articles
+            context.add_metric("selected_count", len(selected_articles))
+
+        except Exception as e:
+            context.add_error(self.name, f"LLM ranking failed: {e}")
+            context.selected_articles = []
+            context.selected_article_indices = []
 
         return context

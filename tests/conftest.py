@@ -493,44 +493,38 @@ def mock_max_client() -> Any:
 # ============================================================================
 
 @pytest.fixture
-def llm_service(mock_gemini_client) -> Any:
-    """Create LLMService with mock client."""
-    from application.services.llm_service import LLMService
-    return LLMService(gemini_client=mock_gemini_client)
+def llm_service() -> Any:
+    """Create LLMService with mock provider."""
+    from application.services.llm_service import LLMService, MockLLMProvider
+    return LLMService(provider=MockLLMProvider())
 
 
 @pytest.fixture
-def embedding_service(mock_jina_client) -> Any:
+def embedding_service(mock_gemini_client) -> Any:
     """Create EmbeddingService with mock client."""
     from application.services.embedding_service import EmbeddingService
-    return EmbeddingService(jina_client=mock_jina_client)
+    return EmbeddingService(client=mock_gemini_client)
 
 
 @pytest.fixture
 def image_service(mock_jina_client) -> Any:
     """Create ImageService with mock client."""
     from application.services.image_service import ImageService
-    return ImageService(jina_client=mock_jina_client)
+    return ImageService(client=mock_jina_client)
 
 
 @pytest.fixture
-def publisher_service(
-    mock_telegram_client, mock_vk_client, mock_max_client
-) -> Any:
-    """Create PublisherService with mock clients."""
+def publisher_service() -> Any:
+    """Create PublisherService with mock clients (auto-creates mocks in test env)."""
     from application.services.publisher_service import PublisherService
-    return PublisherService(
-        telegram_client=mock_telegram_client,
-        vk_client=mock_vk_client,
-        max_client=mock_max_client,
-    )
+    return PublisherService()
 
 
 @pytest.fixture
-def deduplication_service() -> Any:
+def deduplication_service(post_repo) -> Any:
     """Create DeduplicationService."""
     from application.services.deduplication_service import DeduplicationService
-    return DeduplicationService()
+    return DeduplicationService(post_repo=post_repo)
 
 
 @pytest.fixture
@@ -549,15 +543,14 @@ def notification_service() -> Any:
 def fetch_rss_step() -> Any:
     """Create FetchRSSStep."""
     from application.pipeline.steps.fetch_rss import FetchRSSStep
-    from infrastructure.clients.rss_client import RSSClient
-    return FetchRSSStep(rss_client=RSSClient())
+    return FetchRSSStep()
 
 
 @pytest.fixture
 def deduplicate_step(deduplication_service) -> Any:
     """Create DeduplicateStep."""
     from application.pipeline.steps.deduplicate import DeduplicateStep
-    return DeduplicateStep(deduplication_service=deduplication_service)
+    return DeduplicateStep(dedup_service=deduplication_service)
 
 
 @pytest.fixture
@@ -589,10 +582,10 @@ def compute_embedding_step(embedding_service) -> Any:
 
 
 @pytest.fixture
-def check_embedding_duplicate_step() -> Any:
+def check_embedding_duplicate_step(deduplication_service) -> Any:
     """Create CheckEmbeddingDuplicateStep."""
     from application.pipeline.steps.check_embedding_duplicate import CheckEmbeddingDuplicateStep
-    return CheckEmbeddingDuplicateStep()
+    return CheckEmbeddingDuplicateStep(dedup_service=deduplication_service)
 
 
 @pytest.fixture
