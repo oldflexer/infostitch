@@ -568,7 +568,7 @@ def notification_service() -> Any:
     """Create NotificationService with mock telegram client."""
     from application.services.notification_service import NotificationService
     from infrastructure.clients.telegram_client import MockTelegramClient
-    return NotificationService(telegram_client=MockTelegramClient())
+    return NotificationService(client=MockTelegramClient())
 
 
 # ============================================================================
@@ -593,7 +593,7 @@ def deduplicate_step(deduplication_service) -> Any:
 def select_top_step(llm_service) -> Any:
     """Create SelectTopStep."""
     from application.pipeline.steps.select_top import SelectTopStep
-    return SelectTopStep(llm_service=llm_service)
+    return SelectTopStep(llm_service=llm_service, max_articles=3)
 
 
 @pytest.fixture
