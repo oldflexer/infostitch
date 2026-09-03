@@ -20,7 +20,7 @@ class TestTemplate:
             min_length=100,
             max_length=200,
         )
-        
+
         assert template.id == "test_template"
         assert template.name == "Test Template"
         assert template.prompt == "Write a post about {title}. Summary: {summary}"
@@ -37,13 +37,13 @@ class TestTemplate:
             prompt="Title: {title}\nSummary: {summary}\nContent: {content}",
             variables=["title", "summary", "content"],
         )
-        
+
         result = template.format_prompt(
             title="Test Title",
             summary="Test Summary",
             content="Test Content",
         )
-        
+
         assert "Title: Test Title" in result
         assert "Summary: Test Summary" in result
         assert "Content: Test Content" in result
@@ -56,7 +56,7 @@ class TestTemplate:
             prompt="Title: {title}\nSummary: {summary}",
             variables=["title", "summary"],
         )
-        
+
         with pytest.raises(ValueError, match="Missing template variable"):
             template.format_prompt(title="Test Title")
 
@@ -68,11 +68,12 @@ class TestTemplate:
             prompt="Title: {title}\nSummary: {summary}\nContent: {content}",
             variables=["title", "summary", "content"],
         )
-        
+
         # All provided
-        missing = template.validate_variables({"title": "T", "summary": "S", "content": "C"})
+        missing = template.validate_variables(
+            {"title": "T", "summary": "S", "content": "C"})
         assert missing == []
-        
+
         # Some missing
         missing = template.validate_variables({"title": "T"})
         assert "summary" in missing
@@ -116,7 +117,7 @@ class TestTemplateRegistry:
     def test_get_template_exists(self):
         """Test getting existing template."""
         template = get_template("news_brief")
-        
+
         assert template is not None
         assert template.id == "news_brief"
         assert template.name == "News Brief"
@@ -129,14 +130,14 @@ class TestTemplateRegistry:
     def test_get_all_templates(self):
         """Test getting all templates."""
         templates = get_all_templates()
-        
+
         assert len(templates) == 10
         assert all(isinstance(t, Template) for t in templates)
 
     def test_get_template_ids(self):
         """Test getting all template IDs."""
         ids = get_template_ids()
-        
+
         assert len(ids) == 10
         assert "news_brief" in ids
         assert "deep_dive" in ids

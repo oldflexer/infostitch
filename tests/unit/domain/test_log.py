@@ -21,7 +21,7 @@ class TestLog:
             context_json={"key": "value"},
             user_id=1,
         )
-        
+
         assert log.id == 1
         assert log.level == "INFO"
         assert log.module == "test.module"

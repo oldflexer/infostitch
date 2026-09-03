@@ -46,7 +46,8 @@ class PublishStep(PipelineStep):
                 results[post.clean_url] = {"error": str(e)}
 
         context.published_results = results
-        context.add_metric("published_count", len([r for r in results.values() if not r.get("error")]))
+        context.add_metric("published_count", len(
+            [r for r in results.values() if not r.get("error")]))
         return context
 
     def _format_post(self, post: Post) -> str:

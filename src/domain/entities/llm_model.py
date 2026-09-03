@@ -19,7 +19,8 @@ class LLMModel:
     model_id: str = ""
     api_key_ref: str = ""
     is_active: bool = True
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self) -> None:
         """Validate model after initialization."""

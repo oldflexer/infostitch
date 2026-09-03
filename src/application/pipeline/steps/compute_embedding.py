@@ -33,7 +33,8 @@ class ComputeEmbeddingStep(PipelineStep):
                 embedding = await self._embedding_service.generate_embedding(text)
                 embeddings.append(Embedding.from_list(embedding))
             except Exception as e:
-                context.add_error(self.name, f"Post {post.get('article_id')}: {e}")
+                context.add_error(
+                    self.name, f"Post {post.get('article_id')}: {e}")
                 # Add zero embedding as fallback
                 embeddings.append(Embedding.from_list([0.0] * 768))
 

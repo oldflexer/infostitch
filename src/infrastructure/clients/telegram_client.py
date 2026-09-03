@@ -74,7 +74,8 @@ class TelegramClient:
 
         data = response.json()
         if not data.get("ok"):
-            raise RuntimeError(f"Telegram API error: {data.get('description')}")
+            raise RuntimeError(
+                f"Telegram API error: {data.get('description')}")
 
         return data.get("result", {})
 
@@ -113,7 +114,8 @@ class TelegramClient:
 
         data = response.json()
         if not data.get("ok"):
-            raise RuntimeError(f"Telegram API error: {data.get('description')}")
+            raise RuntimeError(
+                f"Telegram API error: {data.get('description')}")
 
         return data.get("result", {})
 
@@ -143,7 +145,8 @@ class TelegramClient:
 
         data = response.json()
         if not data.get("ok"):
-            raise RuntimeError(f"Telegram API error: {data.get('description')}")
+            raise RuntimeError(
+                f"Telegram API error: {data.get('description')}")
 
         return data.get("result", {})
 

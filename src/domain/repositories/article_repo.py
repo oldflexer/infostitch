@@ -36,7 +36,8 @@ class ArticleRepository(ABC):
         ...
 
     @abstractmethod
-    async def get_recent(self, hours: int = 24, limit: int = 100) -> List[Article]:
+    async def get_recent(self, hours: int = 24,
+                         limit: int = 100) -> List[Article]:
         """Get recent articles."""
         ...
 

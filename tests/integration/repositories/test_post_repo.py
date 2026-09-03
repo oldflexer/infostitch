@@ -30,12 +30,12 @@ class TestPostRepository:
             template_id="news_brief",
             created_at=datetime.now(timezone.utc),
         )
-        
+
         added = await post_repo.add(post)
         assert added.id is not None
         assert added.title == "Test Post"
         assert added.clean_url == "https://example.com/post/1"
-        
+
         # Retrieve by ID
         retrieved = await post_repo.get_by_id(added.id)
         assert retrieved is not None
@@ -61,15 +61,15 @@ class TestPostRepository:
             template_id="news_brief",
             created_at=datetime.now(timezone.utc),
         )
-        
+
         added = await post_repo.add(post)
-        
+
         # Retrieve by clean URL
         retrieved = await post_repo.get_by_clean_url("https://example.com/post/unique")
         assert retrieved is not None
         assert retrieved.id == added.id
         assert retrieved.clean_url == "https://example.com/post/unique"
-        
+
         # Non-existent URL
         retrieved = await post_repo.get_by_clean_url("https://example.com/nonexistent")
         assert retrieved is None
@@ -92,13 +92,13 @@ class TestPostRepository:
             template_id="news_brief",
             created_at=datetime.now(timezone.utc),
         )
-        
+
         await post_repo.add(post)
-        
+
         # Should exist
         exists = await post_repo.exists_by_url("https://example.com/post/exists")
         assert exists is True
-        
+
         # Should not exist
         exists = await post_repo.exists_by_url("https://example.com/post/nonexistent")
         assert exists is False

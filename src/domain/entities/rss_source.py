@@ -17,7 +17,8 @@ class RssSource:
     url: str = ""
     enabled: bool = True
     last_fetch: Optional[datetime] = None
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self) -> None:
         """Validate source after initialization."""

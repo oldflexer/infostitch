@@ -60,7 +60,8 @@ class VKClient:
 
         data = response.json()
         if "error" in data:
-            raise RuntimeError(f"VK API error: {data['error'].get('error_msg')}")
+            raise RuntimeError(
+                f"VK API error: {data['error'].get('error_msg')}")
 
         return data.get("response", {})
 
@@ -71,7 +72,8 @@ class VKClient:
             group_id=self._group_id,
         )
 
-    async def upload_photo(self, upload_url: str, photo_path: str) -> Dict[str, Any]:
+    async def upload_photo(self, upload_url: str,
+                           photo_path: str) -> Dict[str, Any]:
         """Upload photo to VK upload server."""
         with open(photo_path, "rb") as f:
             files = {"photo": f}
@@ -183,7 +185,8 @@ class MockVKClient:
     async def get_wall_upload_server(self) -> Dict[str, Any]:
         return {"upload_url": "https://mock.vk.com/upload"}
 
-    async def upload_photo(self, upload_url: str, photo_path: str) -> Dict[str, Any]:
+    async def upload_photo(self, upload_url: str,
+                           photo_path: str) -> Dict[str, Any]:
         self.uploaded_photos.append(photo_path)
         return {"server": 1, "photo": "mock_photo", "hash": "mock_hash"}
 

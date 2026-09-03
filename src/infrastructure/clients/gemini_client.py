@@ -33,7 +33,8 @@ class GeminiClient:
         if self._client is None:
             self._client = httpx.AsyncClient(
                 timeout=httpx.Timeout(60.0, connect=10.0),
-                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+                limits=httpx.Limits(max_connections=10,
+                                    max_keepalive_connections=5),
             )
         return self._client
 
@@ -63,8 +64,10 @@ class GeminiClient:
         contents = [{"role": "user", "parts": parts}]
 
         if system_instruction:
-            contents.insert(0, {"role": "user", "parts": [{"text": system_instruction}]})
-            contents.append({"role": "model", "parts": [{"text": "Understood."}]})
+            contents.insert(0, {"role": "user", "parts": [
+                            {"text": system_instruction}]})
+            contents.append(
+                {"role": "model", "parts": [{"text": "Understood."}]})
 
         payload = {
             "contents": contents,

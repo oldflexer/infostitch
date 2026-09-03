@@ -30,7 +30,8 @@ class Post:
     embedding: Optional[Embedding] = None
     image_url: Optional[str] = None
     is_duplicate: bool = False
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc))
     published_at: Optional[datetime] = None
 
     def __post_init__(self) -> None:

@@ -64,7 +64,8 @@ class DatabaseManager:
         else:
             # Handle both postgresql:// and postgresql+asyncpg://
             if url.startswith("postgresql://"):
-                async_url = url.replace("postgresql://", "postgresql+asyncpg://")
+                async_url = url.replace(
+                    "postgresql://", "postgresql+asyncpg://")
             else:
                 async_url = url
             engine = create_async_engine(

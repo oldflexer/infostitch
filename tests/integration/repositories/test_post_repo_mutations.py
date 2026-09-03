@@ -16,7 +16,7 @@ class TestPostRepositoryMutations:
         """Test updating a post."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         post = Post(
             id=None,
             title="Original Title",
@@ -32,15 +32,15 @@ class TestPostRepositoryMutations:
             created_at=now,
         )
         added = await post_repo.add(post)
-        
+
         # Update the post
         added.title = "Updated Title"
         added.summary = "Updated summary"
         updated = await post_repo.update(added)
-        
+
         assert updated.title == "Updated Title"
         assert updated.summary == "Updated summary"
-        
+
         # Verify in database
         retrieved = await post_repo.get_by_id(added.id)
         assert retrieved.title == "Updated Title"
@@ -50,7 +50,7 @@ class TestPostRepositoryMutations:
         """Test deleting a post."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         post = Post(
             id=None,
             title="To Delete",
@@ -66,15 +66,15 @@ class TestPostRepositoryMutations:
             created_at=now,
         )
         added = await post_repo.add(post)
-        
+
         # Delete
         result = await post_repo.delete(added.id)
         assert result is True
-        
+
         # Verify deleted
         retrieved = await post_repo.get_by_id(added.id)
         assert retrieved is None
-        
+
         # Delete non-existent
         result = await post_repo.delete(99999)
         assert result is False
@@ -84,7 +84,7 @@ class TestPostRepositoryMutations:
         """Test counting recent posts."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add 3 recent posts
         for i in range(3):
             post = Post(
@@ -102,7 +102,7 @@ class TestPostRepositoryMutations:
                 created_at=now,
             )
             await post_repo.add(post)
-        
+
         # Add 1 duplicate (should not count)
         post_dup = Post(
             id=None,
@@ -119,7 +119,7 @@ class TestPostRepositoryMutations:
             created_at=now,
         )
         await post_repo.add(post_dup)
-        
+
         count = await post_repo.count_recent(days=5)
         assert count == 3
 
@@ -128,7 +128,7 @@ class TestPostRepositoryMutations:
         """Test cleaning up old posts."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add recent post
         post1 = Post(
             id=None,
@@ -161,14 +161,14 @@ class TestPostRepositoryMutations:
         )
         await post_repo.add(post1)
         await post_repo.add(post2)
-        
+
         # Cleanup posts older than 90 days
         deleted = await post_repo.cleanup_old(days=90)
         assert deleted == 1
-        
+
         # Verify old post deleted, recent remains
         retrieved = await post_repo.get_by_clean_url("https://example.com/old")
         assert retrieved is None
-        
+
         retrieved = await post_repo.get_by_clean_url("https://example.com/recent")
         assert retrieved is not None

@@ -61,7 +61,7 @@ class SqlAlchemyLLMModelRepository(LLMModelRepository):
     async def get_all(self, active_only: bool = False) -> List[LLMModel]:
         stmt = select(LLMModelModel).order_by(LLMModelModel.created_at)
         if active_only:
-            stmt = stmt.where(LLMModelModel.is_active == True)
+            stmt = stmt.where(LLMModelModel.is_active.is_(True))
         result = await self._session.execute(stmt)
         models = result.scalars().all()
         return [self._to_entity(m) for m in models]

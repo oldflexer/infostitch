@@ -21,7 +21,7 @@ class TestLLMModel:
             is_active=True,
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert model.id == 1
         assert model.name == "gemini-1.5-flash"
         assert model.provider == "gemini"

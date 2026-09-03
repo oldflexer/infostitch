@@ -48,14 +48,22 @@ class TestPublishStep:
         """Create a mock publisher service."""
         from application.services.publisher_service import PublisherService
         service = MagicMock(spec=PublisherService)
-        service.publish_to_all = AsyncMock(side_effect=[
-            {"telegram": {"success": True}, "vk": {"success": True}, "max": {"success": True}},
-            {"telegram": {"success": True}, "vk": {"success": False, "error": "VK API error"}, "max": {"success": True}},
-        ])
+        service.publish_to_all = AsyncMock(
+            side_effect=[
+                {
+                    "telegram": {
+                        "success": True}, "vk": {
+                        "success": True}, "max": {
+                        "success": True}}, {
+                            "telegram": {
+                                "success": True}, "vk": {
+                                    "success": False, "error": "VK API error"}, "max": {
+                                        "success": True}}, ])
         return service
 
     @pytest.mark.asyncio
-    async def test_publish_success(self, publish_step, sample_final_posts, mock_publisher_service):
+    async def test_publish_success(
+            self, publish_step, sample_final_posts, mock_publisher_service):
         """Test successful publishing to all channels."""
         publish_step._publisher_service = mock_publisher_service
 
@@ -73,7 +81,8 @@ class TestPublishStep:
         assert result1["max"]["success"] is True
 
     @pytest.mark.asyncio
-    async def test_publish_partial_failure(self, publish_step, sample_final_posts, mock_publisher_service):
+    async def test_publish_partial_failure(
+            self, publish_step, sample_final_posts, mock_publisher_service):
         """Test publishing with partial channel failures."""
         publish_step._publisher_service = mock_publisher_service
 
@@ -91,7 +100,8 @@ class TestPublishStep:
         assert result.metrics["published_count"] == 2
 
     @pytest.mark.asyncio
-    async def test_publish_empty_input(self, publish_step, mock_publisher_service):
+    async def test_publish_empty_input(
+            self, publish_step, mock_publisher_service):
         """Test publishing with empty post list."""
         publish_step._publisher_service = mock_publisher_service
 
@@ -104,7 +114,8 @@ class TestPublishStep:
         mock_publisher_service.publish_to_all.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_publish_all_channels_fail(self, publish_step, sample_final_posts, mock_publisher_service):
+    async def test_publish_all_channels_fail(
+            self, publish_step, sample_final_posts, mock_publisher_service):
         """Test when all channels fail for a post."""
         publish_step._publisher_service = mock_publisher_service
         mock_publisher_service.publish_to_all = AsyncMock(return_value={
@@ -124,10 +135,12 @@ class TestPublishStep:
         assert result.metrics["published_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_publish_service_error(self, publish_step, sample_final_posts, mock_publisher_service):
+    async def test_publish_service_error(
+            self, publish_step, sample_final_posts, mock_publisher_service):
         """Test handling of publisher service errors."""
         publish_step._publisher_service = mock_publisher_service
-        mock_publisher_service.publish_to_all = AsyncMock(side_effect=Exception("Network error"))
+        mock_publisher_service.publish_to_all = AsyncMock(
+            side_effect=Exception("Network error"))
 
         context = PipelineContext(final_posts=sample_final_posts[:1])
 

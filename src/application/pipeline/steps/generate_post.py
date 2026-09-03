@@ -76,7 +76,8 @@ class GeneratePostStep(PipelineStep):
                     self._template_history.pop(0)
 
             except Exception as e:
-                context.add_error(self.name, f"Article {extracted.get('article_id')}: {e}")
+                context.add_error(
+                    self.name, f"Article {extracted.get('article_id')}: {e}")
 
         context.generated_posts = generated
         context.add_metric("generated_count", len(generated))

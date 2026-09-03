@@ -59,7 +59,8 @@ class CircuitBreaker:
             self.on_failure()
             raise
 
-    async def acall(self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
+    async def acall(
+            self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         """Execute async function with circuit breaker."""
         import time
 
@@ -90,7 +91,9 @@ class CircuitBreaker:
         self.last_failure_time = time.time()
         if self.failure_count >= self.failure_threshold:
             self.state = "open"
-            logger.warning("Circuit breaker opened", failure_count=self.failure_count)
+            logger.warning("Circuit breaker opened",
+                           failure_count=self.failure_count)
+
 
 def get_retry_policy(
     max_attempts: int = 3,
@@ -205,7 +208,8 @@ def retry_sync(
     )
     return retry_policy(func, *args, **kwargs)
 
-    async def acall(self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
+    async def acall(
+            self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         """Execute async function with circuit breaker."""
         import time
 
@@ -236,4 +240,5 @@ def retry_sync(
         self.last_failure_time = time.time()
         if self.failure_count >= self.failure_threshold:
             self.state = "open"
-            logger.warning("Circuit breaker opened", failure_count=self.failure_count)
+            logger.warning("Circuit breaker opened",
+                           failure_count=self.failure_count)

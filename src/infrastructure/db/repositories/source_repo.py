@@ -57,7 +57,7 @@ class SqlAlchemySourceRepository(SourceRepository):
     async def get_all(self, enabled_only: bool = False) -> List[RssSource]:
         stmt = select(RssSourceModel).order_by(RssSourceModel.created_at)
         if enabled_only:
-            stmt = stmt.where(RssSourceModel.enabled == True)
+            stmt = stmt.where(RssSourceModel.enabled.is_(True))
         result = await self._session.execute(stmt)
         models = result.scalars().all()
         return [self._to_entity(m) for m in models]

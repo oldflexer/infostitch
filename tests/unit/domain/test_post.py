@@ -28,7 +28,7 @@ class TestPost:
             template_id="news_brief",
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert post.id == 1
         assert post.title == "Test Post"
         assert post.summary == "Test summary"
@@ -60,14 +60,14 @@ class TestPost:
             template_id="news_brief",
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert post.is_duplicate is True
 
     def test_post_published_at_explicit(self):
         """Test post published_at when explicitly set."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Post with explicit published_at
         post1 = Post(
             id=1,
@@ -85,7 +85,7 @@ class TestPost:
             published_at=now,
         )
         assert post1.published_at == now
-        
+
         # Post without published_at (defaults to None)
         post2 = Post(
             id=2,
@@ -107,7 +107,7 @@ class TestPost:
         """Test mark_published returns new post with published_at set."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         post = Post(
             id=1,
             title="Test Post",
@@ -122,7 +122,7 @@ class TestPost:
             template_id="news_brief",
             created_at=now,
         )
-        
+
         published = post.mark_published(channel_id=1)
         assert published.published_at is not None
         assert published.channel_id == 1
@@ -133,7 +133,7 @@ class TestPost:
         """Test mark_duplicate returns new post with is_duplicate=True."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         post = Post(
             id=1,
             title="Test Post",
@@ -148,7 +148,7 @@ class TestPost:
             template_id="news_brief",
             created_at=now,
         )
-        
+
         duplicated = post.mark_duplicate()
         assert duplicated.is_duplicate is True
         assert duplicated.id == post.id
@@ -158,7 +158,7 @@ class TestPost:
         embedding1 = Embedding.from_list([0.1] * 768)
         embedding2 = Embedding.from_list([0.2] * 768)
         now = datetime.now(timezone.utc)
-        
+
         post = Post(
             id=1,
             title="Test Post",
@@ -173,7 +173,7 @@ class TestPost:
             template_id="news_brief",
             created_at=now,
         )
-        
+
         updated = post.with_embedding(embedding2)
         assert updated.embedding == embedding2
         assert updated.id == post.id

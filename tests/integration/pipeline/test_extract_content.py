@@ -57,7 +57,11 @@ class TestExtractContentStep:
         return service
 
     @pytest.mark.asyncio
-    async def test_extract_content_success(self, extract_content_step, sample_selected_articles, mock_image_service):
+    async def test_extract_content_success(
+            self,
+            extract_content_step,
+            sample_selected_articles,
+            mock_image_service):
         """Test successful content extraction."""
         extract_content_step._image_service = mock_image_service
 
@@ -81,7 +85,8 @@ class TestExtractContentStep:
         assert extracted2["image_url"] is None
 
     @pytest.mark.asyncio
-    async def test_extract_content_empty_input(self, extract_content_step, mock_image_service):
+    async def test_extract_content_empty_input(
+            self, extract_content_step, mock_image_service):
         """Test extraction with empty article list."""
         extract_content_step._image_service = mock_image_service
 
@@ -94,7 +99,11 @@ class TestExtractContentStep:
         mock_image_service.extract_content_and_image.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_extract_content_handles_errors(self, extract_content_step, sample_selected_articles, mock_image_service):
+    async def test_extract_content_handles_errors(
+            self,
+            extract_content_step,
+            sample_selected_articles,
+            mock_image_service):
         """Test handling of extraction errors."""
         extract_content_step._image_service = mock_image_service
         # First call succeeds, second fails
@@ -121,10 +130,15 @@ class TestExtractContentStep:
         assert result.metrics["extracted_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_extract_content_all_fail(self, extract_content_step, sample_selected_articles, mock_image_service):
+    async def test_extract_content_all_fail(
+            self,
+            extract_content_step,
+            sample_selected_articles,
+            mock_image_service):
         """Test when all extractions fail."""
         extract_content_step._image_service = mock_image_service
-        mock_image_service.extract_content_and_image = AsyncMock(side_effect=Exception("Service unavailable"))
+        mock_image_service.extract_content_and_image = AsyncMock(
+            side_effect=Exception("Service unavailable"))
 
         context = PipelineContext(selected_articles=sample_selected_articles)
 

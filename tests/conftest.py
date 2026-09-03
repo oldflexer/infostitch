@@ -55,12 +55,12 @@ async def test_engine():
         poolclass=StaticPool,
         echo=False,
     )
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     await engine.dispose()
 
 
@@ -70,7 +70,7 @@ async def test_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
     async_session = async_sessionmaker(
         test_engine, class_=AsyncSession, expire_on_commit=False
     )
-    
+
     async with async_session() as session:
         yield session
 
@@ -111,6 +111,7 @@ def test_settings() -> Settings:
 # ============================================================================
 # Repository Fixtures
 # ============================================================================
+
 
 @pytest.fixture
 def source_repo(test_session: AsyncSession) -> SqlAlchemySourceRepository:
@@ -195,6 +196,7 @@ def mock_max_client():
 # ============================================================================
 # Repository Fixtures
 # ============================================================================
+
 
 @pytest.fixture
 def source_repo(test_session: AsyncSession) -> SqlAlchemySourceRepository:
@@ -322,17 +324,18 @@ def sample_articles() -> list:
     from domain.entities.article import Article
     from domain.value_objects.url import URL
     from datetime import datetime, timezone
-    
+
     articles = []
     for i in range(5):
         article = Article(
             id=i + 1,
             title=fake.sentence(nb_words=6),
-            url=URL.from_string(f"https://example.com/article/{i+1}"),
+            url=URL.from_string(f"https://example.com/article/{i + 1}"),
             summary=fake.paragraph(nb_sentences=2),
             published_at=datetime.now(timezone.utc),
             source_id=1,
-            image_url=f"https://example.com/image{i+1}.jpg" if i % 2 == 0 else None,
+            image_url=f"https://example.com/image{
+                i + 1}.jpg" if i % 2 == 0 else None,
         )
         articles.append(article)
     return articles
@@ -346,23 +349,24 @@ def sample_posts() -> list:
     from domain.value_objects.url import URL
     from datetime import datetime, timezone
     import random
-    
+
     posts = []
     for i in range(5):
         # Create deterministic embedding for testing
         vector = [random.uniform(-1, 1) for _ in range(768)]
         # Normalize
-        norm = sum(v*v for v in vector) ** 0.5
-        vector = [v/norm for v in vector]
-        
+        norm = sum(v * v for v in vector) ** 0.5
+        vector = [v / norm for v in vector]
+
         post = Post(
             id=i + 1,
             title=fake.sentence(nb_words=6),
             summary=fake.paragraph(nb_sentences=2),
             content=fake.paragraph(nb_sentences=5),
-            clean_url=f"https://example.com/post/{i+1}",
+            clean_url=f"https://example.com/post/{i + 1}",
             embedding=Embedding.from_list(vector),
-            image_url=f"https://example.com/image{i+1}.jpg" if i % 2 == 0 else None,
+            image_url=f"https://example.com/image{
+                i + 1}.jpg" if i % 2 == 0 else None,
             is_duplicate=False,
             source_id=1,
             channel_id=1,
@@ -380,19 +384,19 @@ def duplicate_post_pair() -> tuple:
     from domain.entities.post import Post
     from domain.value_objects.embedding import Embedding
     from datetime import datetime, timezone
-    
+
     # Create base embedding
     base_vector = [0.1] * 768
     base_vector[0] = 0.9
-    base_norm = sum(v*v for v in base_vector) ** 0.5
-    base_vector = [v/base_norm for v in base_vector]
-    
+    base_norm = sum(v * v for v in base_vector) ** 0.5
+    base_vector = [v / base_norm for v in base_vector]
+
     # Create similar embedding (cosine similarity ~0.95)
     similar_vector = base_vector.copy()
     similar_vector[1] = 0.2
-    similar_norm = sum(v*v for v in similar_vector) ** 0.5
-    similar_vector = [v/similar_norm for v in similar_vector]
-    
+    similar_norm = sum(v * v for v in similar_vector) ** 0.5
+    similar_vector = [v / similar_norm for v in similar_vector]
+
     post1 = Post(
         id=1,
         title="Original Article Title",
@@ -408,7 +412,7 @@ def duplicate_post_pair() -> tuple:
         template_id="news_brief",
         created_at=datetime.now(timezone.utc),
     )
-    
+
     post2 = Post(
         id=2,
         title="Similar Article Title",
@@ -424,7 +428,7 @@ def duplicate_post_pair() -> tuple:
         template_id="news_brief",
         created_at=datetime.now(timezone.utc),
     )
-    
+
     return post1, post2
 
 
@@ -514,7 +518,8 @@ def image_service(mock_jina_client) -> Any:
 
 
 @pytest.fixture
-def publisher_service(test_settings, mock_telegram_client, mock_vk_client, mock_max_client) -> Any:
+def publisher_service(test_settings, mock_telegram_client,
+                      mock_vk_client, mock_max_client) -> Any:
     """Create PublisherService with test settings and mock clients."""
     from application.services.publisher_service import PublisherService
     from infrastructure.config import Settings
@@ -528,10 +533,13 @@ def publisher_service(test_settings, mock_telegram_client, mock_vk_client, mock_
     original_get_settings.cache_clear()
     # Create a new cached function
     from functools import lru_cache
+
     @lru_cache
     def patched_get_settings():
         result = test_settings  # test_settings is already a Settings object
-        print(f"DEBUG patched_get_settings: returning settings with app_env={result.app_env}")
+        print(
+            f"DEBUG patched_get_settings: returning settings with app_env={
+                result.app_env}")
         configs = result.get_channel_configs()
         print(f"DEBUG patched_get_settings: configs = {configs}")
         return result
@@ -539,15 +547,26 @@ def publisher_service(test_settings, mock_telegram_client, mock_vk_client, mock_
     config_module.get_settings = patched_get_settings
     publisher_module.get_settings = patched_get_settings
     try:
-        print(f"DEBUG: Creating PublisherService with clients: telegram={type(mock_telegram_client)}, vk={type(mock_vk_client)}, max={type(mock_max_client)}")
-        print(f"DEBUG: get_settings in config_module: {config_module.get_settings}")
-        print(f"DEBUG: get_settings in publisher_module: {publisher_module.get_settings}")
+        print(
+            f"DEBUG: Creating PublisherService with clients: telegram={
+                type(mock_telegram_client)}, vk={
+                type(mock_vk_client)}, max={
+                type(mock_max_client)}")
+        print(
+            f"DEBUG: get_settings in config_module: {
+                config_module.get_settings}")
+        print(
+            f"DEBUG: get_settings in publisher_module: {
+                publisher_module.get_settings}")
         service = PublisherService(
             telegram_client=mock_telegram_client,
             vk_client=mock_vk_client,
             max_client=mock_max_client,
         )
-        print(f"DEBUG: Created service with publishers: {list(service._publishers.keys())}")
+        print(
+            f"DEBUG: Created service with publishers: {
+                list(
+                    service._publishers.keys())}")
         return service
     finally:
         # Restore original function

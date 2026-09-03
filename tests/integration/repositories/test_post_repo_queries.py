@@ -16,7 +16,7 @@ class TestPostRepositoryQueries:
         """Test getting recent posts."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add recent post
         post1 = Post(
             id=None,
@@ -33,7 +33,7 @@ class TestPostRepositoryQueries:
             created_at=now,
         )
         await post_repo.add(post1)
-        
+
         # Add old post (10 days ago)
         post2 = Post(
             id=None,
@@ -50,12 +50,12 @@ class TestPostRepositoryQueries:
             created_at=now - timedelta(days=10),
         )
         await post_repo.add(post2)
-        
+
         # Get recent (5 days)
         recent = await post_repo.get_recent(days=5, limit=100)
         assert len(recent) == 1
         assert recent[0].clean_url == "https://example.com/recent"
-        
+
         # Get recent (15 days)
         recent = await post_repo.get_recent(days=15, limit=100)
         assert len(recent) == 2
@@ -65,7 +65,7 @@ class TestPostRepositoryQueries:
         """Test that get_recent excludes duplicates by default."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add unique post
         post1 = Post(
             id=None,
@@ -82,7 +82,7 @@ class TestPostRepositoryQueries:
             created_at=now,
         )
         await post_repo.add(post1)
-        
+
         # Add duplicate post
         post2 = Post(
             id=None,
@@ -99,12 +99,12 @@ class TestPostRepositoryQueries:
             created_at=now,
         )
         await post_repo.add(post2)
-        
+
         # Default should exclude duplicates
         recent = await post_repo.get_recent(days=5, limit=100)
         assert len(recent) == 1
         assert recent[0].clean_url == "https://example.com/unique"
-        
+
         # With exclude_duplicates=False
         recent = await post_repo.get_recent(days=5, limit=100, exclude_duplicates=False)
         assert len(recent) == 2

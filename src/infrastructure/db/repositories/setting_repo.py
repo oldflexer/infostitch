@@ -95,7 +95,8 @@ class SqlAlchemySettingRepository(SettingRepository):
 
         return value
 
-    async def initialize_defaults(self, defaults: Dict[str, str] = None) -> None:
+    async def initialize_defaults(
+            self, defaults: Dict[str, str] = None) -> None:
         """Initialize default settings if not present."""
         settings_to_set = defaults or DEFAULT_SETTINGS
         for key, value in settings_to_set.items():

@@ -15,7 +15,8 @@ from infrastructure.config import get_settings
 class PublisherClient:
     """Base publisher client interface."""
 
-    async def send_message(self, text: str, image_url: Optional[str] = None) -> Dict[str, Any]:
+    async def send_message(
+            self, text: str, image_url: Optional[str] = None) -> Dict[str, Any]:
         raise NotImplementedError
 
     async def close(self) -> None:
@@ -135,7 +136,8 @@ class PublisherService:
 
         if "telegram" in configs:
             print("DEBUG: Creating TelegramPublisher")
-            self._publishers["telegram"] = TelegramPublisher(client=self._telegram_client)
+            self._publishers["telegram"] = TelegramPublisher(
+                client=self._telegram_client)
         if "vk" in configs:
             print("DEBUG: Creating VKPublisher")
             self._publishers["vk"] = VKPublisher(client=self._vk_client)

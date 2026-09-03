@@ -53,11 +53,13 @@ class TestSelectTopStep:
         from application.services.llm_service import LLMService
         service = MagicMock(spec=LLMService)
         # Mock rank_articles to return indices (1-based)
-        service.rank_articles = AsyncMock(return_value=[1, 3, 2])  # Select articles 1, 3, 2
+        service.rank_articles = AsyncMock(
+            return_value=[1, 3, 2])  # Select articles 1, 3, 2
         return service
 
     @pytest.mark.asyncio
-    async def test_select_top_success(self, select_top_step, sample_articles, mock_llm_service):
+    async def test_select_top_success(
+            self, select_top_step, sample_articles, mock_llm_service):
         """Test successful article selection."""
         select_top_step._llm_service = mock_llm_service
 
@@ -74,7 +76,8 @@ class TestSelectTopStep:
         assert result.selected_articles[2].id == 2
 
     @pytest.mark.asyncio
-    async def test_select_top_empty_input(self, select_top_step, mock_llm_service):
+    async def test_select_top_empty_input(
+            self, select_top_step, mock_llm_service):
         """Test selection with empty article list."""
         select_top_step._llm_service = mock_llm_service
 
@@ -89,7 +92,8 @@ class TestSelectTopStep:
         mock_llm_service.rank_articles.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_select_top_max_articles_limit(self, select_top_step, sample_articles, mock_llm_service):
+    async def test_select_top_max_articles_limit(
+            self, select_top_step, sample_articles, mock_llm_service):
         """Test that max_articles limit is respected."""
         select_top_step._llm_service = mock_llm_service
         select_top_step._max_articles = 2
@@ -103,7 +107,8 @@ class TestSelectTopStep:
         assert result.metrics["selected_count"] == 2
 
     @pytest.mark.asyncio
-    async def test_select_top_invalid_indices_handled(self, select_top_step, sample_articles, mock_llm_service):
+    async def test_select_top_invalid_indices_handled(
+            self, select_top_step, sample_articles, mock_llm_service):
         """Test handling of invalid indices from LLM."""
         select_top_step._llm_service = mock_llm_service
         # Return invalid indices (out of range)
@@ -118,10 +123,12 @@ class TestSelectTopStep:
         assert result.selected_articles[0].id == 1
 
     @pytest.mark.asyncio
-    async def test_select_top_llm_error_handled(self, select_top_step, sample_articles, mock_llm_service):
+    async def test_select_top_llm_error_handled(
+            self, select_top_step, sample_articles, mock_llm_service):
         """Test handling of LLM service errors."""
         select_top_step._llm_service = mock_llm_service
-        mock_llm_service.rank_articles = AsyncMock(side_effect=Exception("LLM API error"))
+        mock_llm_service.rank_articles = AsyncMock(
+            side_effect=Exception("LLM API error"))
 
         context = PipelineContext(deduplicated_articles=sample_articles)
 

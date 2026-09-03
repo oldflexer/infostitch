@@ -40,7 +40,8 @@ class Settings(BaseSettings):
     # Telegram
     telegram_bot_token: str = Field(default="", alias="TELEGRAM_BOT_TOKEN")
     telegram_chat_id: str = Field(default="", alias="TELEGRAM_CHAT_ID")
-    telegram_admin_chat_id: str = Field(default="", alias="TELEGRAM_ADMIN_CHAT_ID")
+    telegram_admin_chat_id: str = Field(
+        default="", alias="TELEGRAM_ADMIN_CHAT_ID")
 
     # VK
     vk_access_token: str = Field(default="", alias="VK_ACCESS_TOKEN")
@@ -52,22 +53,29 @@ class Settings(BaseSettings):
     max_chat_id: str = Field(default="", alias="MAX_CHAT_ID")
 
     # Pipeline defaults (can be overridden by DB settings)
-    pipeline_interval_hours: int = Field(default=3, alias="PIPELINE_INTERVAL_HOURS")
+    pipeline_interval_hours: int = Field(
+        default=3, alias="PIPELINE_INTERVAL_HOURS")
     max_articles_per_run: int = Field(default=20, alias="MAX_ARTICLES_PER_RUN")
     jaccard_threshold: float = Field(default=0.55, alias="JACCARD_THRESHOLD")
     embedding_similarity_threshold: float = Field(
         default=0.75, alias="EMBEDDING_SIMILARITY_THRESHOLD"
     )
-    embedding_model: str = Field(default="text-embedding-004", alias="EMBEDDING_MODEL")
+    embedding_model: str = Field(
+        default="text-embedding-004", alias="EMBEDDING_MODEL")
     post_length_min: int = Field(default=700, alias="POST_LENGTH_MIN")
     post_length_max: int = Field(default=730, alias="POST_LENGTH_MAX")
-    post_total_max_length: int = Field(default=1000, alias="POST_TOTAL_MAX_LENGTH")
-    dedup_window_days_stage1: int = Field(default=7, alias="DEDUP_WINDOW_DAYS_STAGE1")
-    dedup_window_days_stage2: int = Field(default=5, alias="DEDUP_WINDOW_DAYS_STAGE2")
-    cleanup_retention_days: int = Field(default=90, alias="CLEANUP_RETENTION_DAYS")
+    post_total_max_length: int = Field(
+        default=1000, alias="POST_TOTAL_MAX_LENGTH")
+    dedup_window_days_stage1: int = Field(
+        default=7, alias="DEDUP_WINDOW_DAYS_STAGE1")
+    dedup_window_days_stage2: int = Field(
+        default=5, alias="DEDUP_WINDOW_DAYS_STAGE2")
+    cleanup_retention_days: int = Field(
+        default=90, alias="CLEANUP_RETENTION_DAYS")
 
     # Dashboard
-    streamlit_server_port: int = Field(default=8501, alias="STREAMLIT_SERVER_PORT")
+    streamlit_server_port: int = Field(
+        default=8501, alias="STREAMLIT_SERVER_PORT")
     streamlit_server_address: str = Field(
         default="0.0.0.0", alias="STREAMLIT_SERVER_ADDRESS"
     )

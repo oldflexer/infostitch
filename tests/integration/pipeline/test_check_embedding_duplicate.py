@@ -51,11 +51,17 @@ class TestCheckEmbeddingDuplicateStep:
         """Create a mock deduplication service."""
         from application.services.deduplication_service import DeduplicationService
         service = MagicMock(spec=DeduplicationService)
-        service.is_duplicate_by_embedding = AsyncMock(side_effect=[False, True])
+        service.is_duplicate_by_embedding = AsyncMock(
+            side_effect=[False, True])
         return service
 
     @pytest.mark.asyncio
-    async def test_check_embedding_duplicate_mixed(self, check_embedding_duplicate_step, sample_generated_posts, sample_embeddings, mock_dedup_service):
+    async def test_check_embedding_duplicate_mixed(
+            self,
+            check_embedding_duplicate_step,
+            sample_generated_posts,
+            sample_embeddings,
+            mock_dedup_service):
         """Test semantic duplicate check with mixed results."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
 
@@ -80,10 +86,16 @@ class TestCheckEmbeddingDuplicateStep:
         assert dup_post.is_duplicate is True
 
     @pytest.mark.asyncio
-    async def test_check_embedding_duplicate_all_unique(self, check_embedding_duplicate_step, sample_generated_posts, sample_embeddings, mock_dedup_service):
+    async def test_check_embedding_duplicate_all_unique(
+            self,
+            check_embedding_duplicate_step,
+            sample_generated_posts,
+            sample_embeddings,
+            mock_dedup_service):
         """Test when all posts are unique."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
-        mock_dedup_service.is_duplicate_by_embedding = AsyncMock(return_value=False)
+        mock_dedup_service.is_duplicate_by_embedding = AsyncMock(
+            return_value=False)
 
         context = PipelineContext(
             generated_posts=sample_generated_posts,
@@ -98,10 +110,16 @@ class TestCheckEmbeddingDuplicateStep:
         assert result.metrics["duplicate_posts"] == 0
 
     @pytest.mark.asyncio
-    async def test_check_embedding_duplicate_all_duplicates(self, check_embedding_duplicate_step, sample_generated_posts, sample_embeddings, mock_dedup_service):
+    async def test_check_embedding_duplicate_all_duplicates(
+            self,
+            check_embedding_duplicate_step,
+            sample_generated_posts,
+            sample_embeddings,
+            mock_dedup_service):
         """Test when all posts are duplicates."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
-        mock_dedup_service.is_duplicate_by_embedding = AsyncMock(return_value=True)
+        mock_dedup_service.is_duplicate_by_embedding = AsyncMock(
+            return_value=True)
 
         context = PipelineContext(
             generated_posts=sample_generated_posts,
@@ -116,7 +134,8 @@ class TestCheckEmbeddingDuplicateStep:
         assert result.metrics["duplicate_posts"] == 2
 
     @pytest.mark.asyncio
-    async def test_check_embedding_duplicate_empty_input(self, check_embedding_duplicate_step, mock_dedup_service):
+    async def test_check_embedding_duplicate_empty_input(
+            self, check_embedding_duplicate_step, mock_dedup_service):
         """Test with empty input."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
 
@@ -131,7 +150,12 @@ class TestCheckEmbeddingDuplicateStep:
         mock_dedup_service.is_duplicate_by_embedding.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_check_embedding_duplicate_error_handled(self, check_embedding_duplicate_step, sample_generated_posts, sample_embeddings, mock_dedup_service):
+    async def test_check_embedding_duplicate_error_handled(
+            self,
+            check_embedding_duplicate_step,
+            sample_generated_posts,
+            sample_embeddings,
+            mock_dedup_service):
         """Test handling of service errors."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
         mock_dedup_service.is_duplicate_by_embedding = AsyncMock(side_effect=[

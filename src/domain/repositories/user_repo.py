@@ -46,7 +46,8 @@ class UserRepository(ABC):
         ...
 
     @abstractmethod
-    async def verify_password(self, username: str, password: str) -> Optional[User]:
+    async def verify_password(self, username: str,
+                              password: str) -> Optional[User]:
         """Verify password and return user if valid."""
         ...
 

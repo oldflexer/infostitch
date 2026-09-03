@@ -49,35 +49,36 @@ async def render_manual_actions(
     db_settings: Dict[str, Any],
 ) -> None:
     """Render the manual actions page."""
-    st.markdown('<div class="main-header">🔧 Manual Actions</div>', unsafe_allow_html=True)
-    
+    st.markdown('<div class="main-header">🔧 Manual Actions</div>',
+                unsafe_allow_html=True)
+
     st.markdown("""
-    This page provides manual control over the pipeline. Use with caution - 
+    This page provides manual control over the pipeline. Use with caution -
     these actions will execute real operations on your data and external services.
     """)
-    
+
     st.divider()
-    
+
     # Trigger Pipeline
     _render_trigger_pipeline(setting_repo)
-    
+
     st.divider()
-    
+
     # Clear Old Data
     _render_clear_old_data(post_repo)
-    
+
     st.divider()
-    
+
     # Test Channels
     _render_test_channels()
-    
+
     st.divider()
-    
+
     # Refresh Settings
     _render_refresh_settings(setting_repo)
-    
+
     st.divider()
-    
+
     # View Pipeline Context (Debug)
     _render_debug_context()
 
@@ -85,11 +86,11 @@ async def render_manual_actions(
 def _render_test_channels() -> None:
     """Render test channels section."""
     st.subheader("📡 Test Channels")
-    
+
     st.markdown("""
     Send a test message to each enabled channel to verify configuration.
     """)
-    
+
     if st.button("📤 Send Test Messages", use_container_width=True):
         _test_channels()
 
@@ -104,11 +105,11 @@ def _test_channels() -> None:
 def _render_refresh_settings(setting_repo: Any) -> None:
     """Render refresh settings section."""
     st.subheader("🔄 Refresh Settings")
-    
+
     st.markdown("""
     Reload settings from the database without restarting the dashboard.
     """)
-    
+
     if st.button("🔄 Refresh Settings", use_container_width=True):
         st.success("✅ Settings refreshed from database!")
         st.rerun()
@@ -120,18 +121,21 @@ def _render_debug_context() -> None:
         st.markdown("""
         View the current pipeline context and session state for debugging.
         """)
-        
+
         if st.button("Show Session State"):
             st.json(dict(st.session_state))
-        
+
         if st.button("Show Environment Variables"):
             import os
-            env_vars = {k: v for k, v in os.environ.items() if not k.startswith('_')}
+            env_vars = {k: v for k, v in os.environ.items()
+                        if not k.startswith('_')}
             st.json(env_vars)
+
+
 def _render_trigger_pipeline(setting_repo: Any) -> None:
     """Render pipeline trigger section."""
     st.subheader("🚀 Trigger Pipeline")
-    
+
     st.markdown("""
     Manually trigger a full pipeline run. This will:
     1. Fetch articles from all enabled RSS sources
@@ -143,12 +147,13 @@ def _render_trigger_pipeline(setting_repo: Any) -> None:
     7. Check for semantic duplicates
     8. Publish to enabled channels
     """)
-    
+
     col1, col2 = st.columns([3, 1])
     with col1:
         dry_run = st.checkbox("🔍 Dry Run (no publishing)", value=True)
     with col2:
-        if st.button("🚀 Run Pipeline", type="primary", use_container_width=True):
+        if st.button("🚀 Run Pipeline", type="primary",
+                     use_container_width=True):
             _run_pipeline(dry_run)
 
 
@@ -157,18 +162,19 @@ def _run_pipeline(dry_run: bool) -> None:
     with st.spinner("Running pipeline... This may take a few minutes."):
         progress_bar = st.progress(0)
         status_text = st.empty()
-        
+
         try:
             # This would need to be async, but Streamlit runs sync
             # For now, show a message
             status_text.text("Pipeline execution would run here...")
             progress_bar.progress(100)
-            
+
             if dry_run:
                 st.success("✅ Dry run completed! No posts were published.")
             else:
-                st.success("✅ Pipeline completed! Posts published to channels.")
-                
+                st.success(
+                    "✅ Pipeline completed! Posts published to channels.")
+
         except Exception as e:
             st.error(f"Pipeline failed: {e}")
 
@@ -176,17 +182,19 @@ def _run_pipeline(dry_run: bool) -> None:
 def _render_clear_old_data(post_repo: Any) -> None:
     """Render clear old data section."""
     st.subheader("🗑️ Clear Old Data")
-    
+
     st.markdown("""
     Delete published posts older than the specified number of days.
     This action cannot be undone.
     """)
-    
+
     col1, col2 = st.columns([3, 1])
     with col1:
-        days = st.number_input("Days to retain", min_value=1, max_value=365, value=90, step=1)
+        days = st.number_input("Days to retain", min_value=1,
+                               max_value=365, value=90, step=1)
     with col2:
-        if st.button("🗑️ Clear Old Data", type="secondary", use_container_width=True):
+        if st.button("🗑️ Clear Old Data", type="secondary",
+                     use_container_width=True):
             _clear_old_data(post_repo, days)
 
 

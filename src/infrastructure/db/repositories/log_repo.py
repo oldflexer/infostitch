@@ -32,11 +32,11 @@ class Pagination:
     """Pagination parameters."""
     page: int = 1
     page_size: int = 50
-    
+
     @property
     def offset(self) -> int:
         return (self.page - 1) * self.page_size
-    
+
     @property
     def limit(self) -> int:
         return self.page_size
@@ -87,6 +87,8 @@ class LogRepository(ABC):
     ) -> List[Log]:
         """Search logs with full-text query."""
         ...
+
+
 class SqlAlchemyLogRepository(LogRepository):
     """SQLAlchemy implementation of LogRepository."""
 
@@ -130,7 +132,7 @@ class SqlAlchemyLogRepository(LogRepository):
         pagination: Optional[Pagination] = None,
     ) -> List[Log]:
         stmt = select(LogModel).order_by(desc(LogModel.timestamp))
-        
+
         if filters:
             conditions = []
             if filters.level:
@@ -143,7 +145,8 @@ class SqlAlchemyLogRepository(LogRepository):
                 conditions.append(LogModel.timestamp <= filters.end_time)
             if filters.correlation_id:
                 conditions.append(
-                    LogModel.context_json.op('->>')('correlation_id') == filters.correlation_id
+                    LogModel.context_json.op(
+                        '->>')('correlation_id') == filters.correlation_id
                 )
             if filters.search_query:
                 conditions.append(
@@ -151,17 +154,17 @@ class SqlAlchemyLogRepository(LogRepository):
                 )
             if conditions:
                 stmt = stmt.where(and_(*conditions))
-        
+
         if pagination:
             stmt = stmt.offset(pagination.offset).limit(pagination.limit)
-        
+
         result = await self._session.execute(stmt)
         models = result.scalars().all()
         return [self._to_entity(m) for m in models]
 
     async def count_logs(self, filters: Optional[LogFilters] = None) -> int:
         stmt = select(func.count(LogModel.id))
-        
+
         if filters:
             conditions = []
             if filters.level:
@@ -174,7 +177,8 @@ class SqlAlchemyLogRepository(LogRepository):
                 conditions.append(LogModel.timestamp <= filters.end_time)
             if filters.correlation_id:
                 conditions.append(
-                    LogModel.context_json.op('->>')('correlation_id') == filters.correlation_id
+                    LogModel.context_json.op(
+                        '->>')('correlation_id') == filters.correlation_id
                 )
             if filters.search_query:
                 conditions.append(
@@ -182,7 +186,7 @@ class SqlAlchemyLogRepository(LogRepository):
                 )
             if conditions:
                 stmt = stmt.where(and_(*conditions))
-        
+
         result = await self._session.execute(stmt)
         return result.scalar() or 0
 
@@ -196,21 +200,22 @@ class SqlAlchemyLogRepository(LogRepository):
             conditions.append(LogModel.timestamp >= start_time)
         if end_time:
             conditions.append(LogModel.timestamp <= end_time)
-        
+
         # Total count
         total_stmt = select(func.count(LogModel.id))
         if conditions:
             total_stmt = total_stmt.where(and_(*conditions))
         total_result = await self._session.execute(total_stmt)
         total = total_result.scalar() or 0
-        
+
         # By level
-        level_stmt = select(LogModel.level, func.count(LogModel.id)).group_by(LogModel.level)
+        level_stmt = select(LogModel.level, func.count(
+            LogModel.id)).group_by(LogModel.level)
         if conditions:
             level_stmt = level_stmt.where(and_(*conditions))
         level_result = await self._session.execute(level_stmt)
         by_level = {row.level: row[1] for row in level_result.all()}
-        
+
         # By module (top 10)
         module_stmt = (
             select(LogModel.module, func.count(LogModel.id))
@@ -222,7 +227,7 @@ class SqlAlchemyLogRepository(LogRepository):
             module_stmt = module_stmt.where(and_(*conditions))
         module_result = await self._session.execute(module_stmt)
         by_module = {row.module: row[1] for row in module_result.all()}
-        
+
         return {
             "total": total,
             "by_level": by_level,

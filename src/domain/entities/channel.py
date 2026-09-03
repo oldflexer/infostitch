@@ -18,7 +18,8 @@ class Channel:
     type: str = ""  # telegram, vk, max
     enabled: bool = True
     config: Dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self) -> None:
         """Validate channel after initialization."""
@@ -35,7 +36,8 @@ class Channel:
         }
         for key in required_keys.get(self.type, []):
             if key not in self.config:
-                raise ValueError(f"Missing required config key for {self.type}: {key}")
+                raise ValueError(
+                    f"Missing required config key for {self.type}: {key}")
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""

@@ -31,7 +31,8 @@ class JinaClient:
         if self._client is None:
             self._client = httpx.AsyncClient(
                 timeout=httpx.Timeout(30.0, connect=10.0),
-                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+                limits=httpx.Limits(max_connections=10,
+                                    max_keepalive_connections=5),
             )
         return self._client
 
@@ -64,7 +65,9 @@ class JinaClient:
         Returns:
             Dict with 'title', 'content', 'description', 'image', 'url'
         """
-        extract_url = f"{self._base_url}/http://{url.lstrip('https://').lstrip('http://')}"
+        extract_url = f"{
+            self._base_url}/http://{
+            url.lstrip('https://').lstrip('http://')}"
 
         response = await self.client.get(
             extract_url,
@@ -104,7 +107,9 @@ class JinaClient:
             "with_images_summary": str(with_images_summary).lower(),
         }
 
-        extract_url = f"{self._base_url}/http://{url.lstrip('https://').lstrip('http://')}"
+        extract_url = f"{
+            self._base_url}/http://{
+            url.lstrip('https://').lstrip('http://')}"
 
         response = await self.client.get(
             extract_url,
@@ -128,7 +133,8 @@ class JinaClient:
         # Check for images in content
         images = data.get("images", [])
         if images:
-            return images[0].get("url") if isinstance(images[0], dict) else images[0]
+            return images[0].get("url") if isinstance(
+                images[0], dict) else images[0]
 
         # Try to extract from markdown content
         content = data.get("content", "")
@@ -176,7 +182,8 @@ class MockJinaClient:
         self.call_count += 1
         return {
             "title": "Test Article Title",
-            "content": "This is the full article content extracted by Jina AI. " * 10,
+            "content": "This is the full article content extracted by Jina AI. " *
+            10,
             "description": "Test article description",
             "image": "https://example.com/image.jpg",
             "url": url,

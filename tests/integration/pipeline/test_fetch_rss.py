@@ -60,7 +60,8 @@ class TestFetchRSSStep:
             yield mock
 
     @pytest.mark.asyncio
-    async def test_fetch_rss_success(self, fetch_rss_step, sample_rss_sources, mock_feedparser):
+    async def test_fetch_rss_success(
+            self, fetch_rss_step, sample_rss_sources, mock_feedparser):
         """Test successful RSS fetching from multiple sources."""
         context = PipelineContext(rss_sources=sample_rss_sources)
 
@@ -75,7 +76,8 @@ class TestFetchRSSStep:
         assert result.metrics.get("fetched_3") is None
 
     @pytest.mark.asyncio
-    async def test_fetch_rss_disabled_source_skipped(self, fetch_rss_step, sample_rss_sources, mock_feedparser):
+    async def test_fetch_rss_disabled_source_skipped(
+            self, fetch_rss_step, sample_rss_sources, mock_feedparser):
         """Test that disabled sources are skipped."""
         context = PipelineContext(rss_sources=sample_rss_sources)
 
@@ -85,7 +87,8 @@ class TestFetchRSSStep:
         assert result.metrics["total_fetched"] == 4
 
     @pytest.mark.asyncio
-    async def test_fetch_rss_handles_parse_error(self, fetch_rss_step, sample_rss_sources):
+    async def test_fetch_rss_handles_parse_error(
+            self, fetch_rss_step, sample_rss_sources):
         """Test handling of feed parse errors."""
         with patch("application.pipeline.steps.fetch_rss.feedparser.parse") as mock_parse:
             mock_feed = MagicMock()
@@ -93,7 +96,8 @@ class TestFetchRSSStep:
             mock_feed.bozo_exception = Exception("Invalid XML")
             mock_parse.return_value = mock_feed
 
-            context = PipelineContext(rss_sources=sample_rss_sources[:1])  # Only first source
+            context = PipelineContext(
+                rss_sources=sample_rss_sources[:1])  # Only first source
 
             result = await fetch_rss_step.execute(context)
 
@@ -104,7 +108,8 @@ class TestFetchRSSStep:
             assert result.raw_articles == []
 
     @pytest.mark.asyncio
-    async def test_fetch_rss_handles_malformed_entries(self, fetch_rss_step, sample_rss_sources):
+    async def test_fetch_rss_handles_malformed_entries(
+            self, fetch_rss_step, sample_rss_sources):
         """Test handling of malformed RSS entries."""
         with patch("application.pipeline.steps.fetch_rss.feedparser.parse") as mock_parse:
             mock_feed = MagicMock()
@@ -119,7 +124,8 @@ class TestFetchRSSStep:
                     "content": [{"value": "Valid content"}],
                 },
                 {
-                    # Missing required fields - will cause exception in from_rss_entry
+                    # Missing required fields - will cause exception in
+                    # from_rss_entry
                     "title": None,
                     "link": None,
                 },
@@ -135,7 +141,8 @@ class TestFetchRSSStep:
             assert result.raw_articles[0].title == "Valid Article"
 
     @pytest.mark.asyncio
-    async def test_fetch_rss_empty_feed(self, fetch_rss_step, sample_rss_sources):
+    async def test_fetch_rss_empty_feed(
+            self, fetch_rss_step, sample_rss_sources):
         """Test handling of empty RSS feed."""
         with patch("application.pipeline.steps.fetch_rss.feedparser.parse") as mock_parse:
             mock_feed = MagicMock()

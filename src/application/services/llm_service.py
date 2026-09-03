@@ -130,7 +130,7 @@ class LLMService:
     ) -> List[int]:
         """Rank articles by relevance using LLM."""
         articles_text = "\n".join(
-            f"{i+1}. {a['title']} - {a.get('summary', '')[:200]}"
+            f"{i + 1}. {a['title']} - {a.get('summary', '')[:200]}"
             for i, a in enumerate(articles[:max_count])
         )
 

@@ -6,6 +6,29 @@ Usage:
     python -m src.presentation.cli.run --help   # Show help
 """
 from __future__ import annotations
+from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
+from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
+from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
+from infrastructure.db.session import get_db_manager
+from application.services.notification_service import NotificationService
+from application.services.publisher_service import PublisherService
+from application.services.deduplication_service import DeduplicationService
+from application.services.image_service import ImageService
+from application.services.embedding_service import EmbeddingService
+from application.services.llm_service import LLMService
+from application.dto.pipeline_context import PipelineContext
+from application.pipeline.steps.publish import PublishStep
+from application.pipeline.steps.check_embedding_duplicate import CheckEmbeddingDuplicateStep
+from application.pipeline.steps.compute_embedding import ComputeEmbeddingStep
+from application.pipeline.steps.generate_post import GeneratePostStep
+from application.pipeline.steps.extract_content import ExtractContentStep
+from application.pipeline.steps.select_top import SelectTopStep
+from application.pipeline.steps.deduplicate import DeduplicateStep
+from application.pipeline.steps.fetch_rss import FetchRSSStep
+from application.pipeline.pipeline import Pipeline
+from infrastructure.logging.metrics import init_metrics
+from infrastructure.db.session import get_db_manager, init_db, close_db
+from infrastructure.config import get_settings
 
 import argparse
 import asyncio
@@ -15,34 +38,8 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from infrastructure.config import get_settings
-from infrastructure.db.session import get_db_manager, init_db, close_db
-from infrastructure.logging.metrics import init_metrics
 
 # Pipeline imports
-from application.pipeline.pipeline import Pipeline
-from application.pipeline.steps.fetch_rss import FetchRSSStep
-from application.pipeline.steps.deduplicate import DeduplicateStep
-from application.pipeline.steps.select_top import SelectTopStep
-from application.pipeline.steps.extract_content import ExtractContentStep
-from application.pipeline.steps.generate_post import GeneratePostStep
-from application.pipeline.steps.compute_embedding import ComputeEmbeddingStep
-from application.pipeline.steps.check_embedding_duplicate import CheckEmbeddingDuplicateStep
-from application.pipeline.steps.publish import PublishStep
-
-from application.dto.pipeline_context import PipelineContext
-from application.services.llm_service import LLMService
-from application.services.embedding_service import EmbeddingService
-from application.services.image_service import ImageService
-from application.services.deduplication_service import DeduplicationService
-from application.services.publisher_service import PublisherService
-from application.services.notification_service import NotificationService
-
-from infrastructure.db.session import get_db_manager
-from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
-from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
-from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
-from infrastructure.logging.metrics import init_metrics
 
 
 async def run_pipeline(dry_run: bool = False) -> int:
@@ -100,7 +97,8 @@ async def run_pipeline(dry_run: bool = False) -> int:
         pipeline = Pipeline(steps=[
             FetchRSSStep(),
             DeduplicateStep(dedup_service),
-            SelectTopStep(LLMService(), max_articles=settings.max_articles_per_run),
+            SelectTopStep(
+                LLMService(), max_articles=settings.max_articles_per_run),
             ExtractContentStep(ImageService()),
             GeneratePostStep(LLMService()),
             ComputeEmbeddingStep(EmbeddingService()),
@@ -115,12 +113,24 @@ async def run_pipeline(dry_run: bool = False) -> int:
             # Print results
             print(f"\n📊 Pipeline Results:")
             print(f"  Fetched: {context.metrics.get('total_fetched', 0)}")
-            print(f"  After URL dedup: {context.metrics.get('after_url_dedup', 0)}")
-            print(f"  After Jaccard dedup: {context.metrics.get('after_jaccard_dedup', 0)}")
+            print(
+                f"  After URL dedup: {
+                    context.metrics.get(
+                        'after_url_dedup',
+                        0)}")
+            print(
+                f"  After Jaccard dedup: {
+                    context.metrics.get(
+                        'after_jaccard_dedup',
+                        0)}")
             print(f"  Selected: {context.metrics.get('selected_count', 0)}")
             print(f"  Extracted: {context.metrics.get('extracted_count', 0)}")
             print(f"  Generated: {context.metrics.get('generated_count', 0)}")
-            print(f"  Embeddings: {context.metrics.get('embeddings_computed', 0)}")
+            print(
+                f"  Embeddings: {
+                    context.metrics.get(
+                        'embeddings_computed',
+                        0)}")
             print(f"  Final posts: {context.metrics.get('final_posts', 0)}")
             print(f"  Duplicates: {context.metrics.get('duplicate_posts', 0)}")
             print(f"  Published: {context.metrics.get('published_count', 0)}")
@@ -176,7 +186,8 @@ async def show_config() -> int:
     print(f"  Max articles per run: {settings.max_articles_per_run}")
     print(f"  Jaccard threshold: {settings.jaccard_threshold}")
     print(f"  Embedding threshold: {settings.embedding_similarity_threshold}")
-    print(f"  Post length: {settings.post_length_min}-{settings.post_length_max}")
+    print(
+        f"  Post length: {settings.post_length_min}-{settings.post_length_max}")
     print(f"  Cleanup retention: {settings.cleanup_retention_days} days")
 
     # Show DB settings
@@ -221,7 +232,8 @@ def main() -> int:
     init_parser = subparsers.add_parser("init-db", help="Initialize database")
 
     # Seed DB
-    seed_parser = subparsers.add_parser("seed", help="Seed database with defaults")
+    seed_parser = subparsers.add_parser(
+        "seed", help="Seed database with defaults")
 
     args = parser.parse_args()
 

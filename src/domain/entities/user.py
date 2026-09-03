@@ -17,7 +17,8 @@ class User:
     username: str = ""
     password_hash: str = ""
     role: str = "admin"
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc))
     last_login: Optional[datetime] = None
 
     def __post_init__(self) -> None:

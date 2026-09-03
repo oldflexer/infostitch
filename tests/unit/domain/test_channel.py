@@ -20,7 +20,7 @@ class TestChannel:
             config={"bot_token_ref": "token", "chat_id": "chat123"},
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert channel.id == 1
         assert channel.name == "Test Telegram"
         assert channel.type == "telegram"
@@ -38,7 +38,7 @@ class TestChannel:
                 config = {"access_token_ref": "token", "group_id": "group123"}
             else:  # max
                 config = {"bot_token_ref": "token", "chat_id": "chat123"}
-                
+
             channel = Channel(
                 id=1,
                 name=f"Test {channel_type}",
@@ -83,13 +83,13 @@ class TestChannel:
             config={"bot_token_ref": "token", "chat_id": "chat123"},
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert channel.enabled is True
         toggled = channel.toggle_enabled()
         assert toggled.enabled is False
         assert toggled.id == channel.id
         assert toggled.name == channel.name
-        
+
         toggled2 = toggled.toggle_enabled()
         assert toggled2.enabled is True
 
@@ -103,8 +103,9 @@ class TestChannel:
             config={"bot_token_ref": "token", "chat_id": "chat123"},
             created_at=datetime.now(timezone.utc),
         )
-        
-        updated = channel.update_config({"bot_token_ref": "new_token", "chat_id": "new_chat"})
+
+        updated = channel.update_config(
+            {"bot_token_ref": "new_token", "chat_id": "new_chat"})
         assert updated.config["bot_token_ref"] == "new_token"
         assert updated.config["chat_id"] == "new_chat"
         assert updated.id == channel.id

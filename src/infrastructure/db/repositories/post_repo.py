@@ -78,7 +78,8 @@ class SqlAlchemyPostRepository(PostRepository):
 
     async def get_by_id(self, post_id: int) -> Optional[Post]:
         """Get post by ID."""
-        stmt = select(PublishedPostModel).where(PublishedPostModel.id == post_id)
+        stmt = select(PublishedPostModel).where(
+            PublishedPostModel.id == post_id)
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
@@ -98,7 +99,7 @@ class SqlAlchemyPostRepository(PostRepository):
         )
 
         if exclude_duplicates:
-            stmt = stmt.where(PublishedPostModel.is_duplicate == False)
+            stmt = stmt.where(PublishedPostModel.is_duplicate.is_(False))
 
         result = await self._session.execute(stmt)
         models = result.scalars().all()
@@ -136,7 +137,7 @@ class SqlAlchemyPostRepository(PostRepository):
         """Get posts marked as duplicates."""
         stmt = (
             select(PublishedPostModel)
-            .where(PublishedPostModel.is_duplicate == True)
+            .where(PublishedPostModel.is_duplicate.is_(True))
             .order_by(PublishedPostModel.created_at.desc())
             .limit(limit)
         )
@@ -168,7 +169,8 @@ class SqlAlchemyPostRepository(PostRepository):
 
     async def delete(self, post_id: int) -> bool:
         """Delete a post."""
-        stmt = delete(PublishedPostModel).where(PublishedPostModel.id == post_id)
+        stmt = delete(PublishedPostModel).where(
+            PublishedPostModel.id == post_id)
         result = await self._session.execute(stmt)
         return result.rowcount > 0
 
@@ -193,12 +195,13 @@ class SqlAlchemyPostRepository(PostRepository):
                 select(PublishedPostModel)
                 .where(
                     and_(
-                        PublishedPostModel.is_duplicate == False,
+                        PublishedPostModel.is_duplicate.is_(False),
                         PublishedPostModel.created_at >= cutoff,
                     )
                 )
                 .order_by(
-                    PublishedPostModel.embedding.cosine_distance(embedding.vector)
+                    PublishedPostModel.embedding.cosine_distance(
+                        embedding.vector)
                 )
                 .limit(1)
             )
@@ -215,7 +218,7 @@ class SqlAlchemyPostRepository(PostRepository):
             # SQLite fallback: load all and compute in Python
             stmt = select(PublishedPostModel).where(
                 and_(
-                    PublishedPostModel.is_duplicate == False,
+                    PublishedPostModel.is_duplicate.is_(False),
                     PublishedPostModel.created_at >= cutoff,
                 )
             )
@@ -228,7 +231,8 @@ class SqlAlchemyPostRepository(PostRepository):
             for model in models:
                 if model.embedding:
                     if isinstance(model.embedding, (bytes, bytearray)):
-                        stored_embedding = Embedding.from_bytes(model.embedding)
+                        stored_embedding = Embedding.from_bytes(
+                            model.embedding)
                     else:
                         stored_embedding = Embedding.from_list(model.embedding)
 
@@ -266,7 +270,7 @@ class SqlAlchemyPostRepository(PostRepository):
         stmt = select(func.count(PublishedPostModel.id)).where(
             and_(
                 PublishedPostModel.created_at >= cutoff,
-                PublishedPostModel.is_duplicate == False,
+                PublishedPostModel.is_duplicate.is_(False),
             )
         )
         result = await self._session.execute(stmt)

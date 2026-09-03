@@ -86,7 +86,8 @@ class DeduplicationService:
             return {
                 "post_id": similar_post.id,
                 "title": similar_post.title,
-                "similarity": embedding.cosine_similarity(similar_post.embedding),
+                "similarity": embedding.cosine_similarity(
+                    similar_post.embedding),
             }
         return None
 

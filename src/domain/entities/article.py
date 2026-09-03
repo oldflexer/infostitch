@@ -23,7 +23,8 @@ class Article:
     summary: str = ""
     content: str = ""
     image_url: Optional[str] = None
-    fetched_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    fetched_at: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self) -> None:
         """Validate article after initialization."""
@@ -65,16 +66,19 @@ class Article:
         url = entry.get("link", "")
         if not url and "links" in entry:
             for link in entry["links"]:
-                if link.get("rel") == "alternate" or link.get("type", "").startswith("text/html"):
+                if link.get("rel") == "alternate" or link.get(
+                        "type", "").startswith("text/html"):
                     url = link.get("href", "")
                     break
 
         # Extract published date
         published_at = None
-        for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
+        for date_field in ["published_parsed",
+                           "updated_parsed", "created_parsed"]:
             if date_field in entry and entry[date_field]:
                 try:
-                    published_at = datetime(*entry[date_field][:6], tzinfo=timezone.utc)
+                    published_at = datetime(
+                        *entry[date_field][:6], tzinfo=timezone.utc)
                     break
                 except Exception:
                     pass
@@ -86,7 +90,8 @@ class Article:
                     try:
                         published_at = date_parser.parse(entry[date_field])
                         if published_at.tzinfo is None:
-                            published_at = published_at.replace(tzinfo=timezone.utc)
+                            published_at = published_at.replace(
+                                tzinfo=timezone.utc)
                         break
                     except Exception:
                         pass

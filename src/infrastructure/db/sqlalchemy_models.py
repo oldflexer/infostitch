@@ -4,6 +4,8 @@ Maps to the database schema defined in docs/DB.md.
 Supports both SQLite (dev) and PostgreSQL + pgvector (prod).
 """
 from __future__ import annotations
+from sqlalchemy.pool import NullPool
+from sqlalchemy import create_engine, Text
 
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
@@ -60,7 +62,8 @@ class RssSource(Base):
         autoincrement=True,
     )
     url: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
-    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    enabled: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False)
     last_fetch: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
@@ -74,7 +77,10 @@ class RssSource(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<RssSource(id={self.id}, url={self.url}, enabled={self.enabled})>"
+        return f"<RssSource(id={
+            self.id}, url={
+            self.url}, enabled={
+            self.enabled})>"
 
 
 class Channel(Base):
@@ -88,8 +94,10 @@ class Channel(Base):
         autoincrement=True,
     )
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    type: Mapped[str] = mapped_column(String(20), nullable=False)  # telegram, vk, max
-    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    type: Mapped[str] = mapped_column(
+        String(20), nullable=False)  # telegram, vk, max
+    enabled: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False)
     config_json: Mapped[Dict[str, Any]] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
@@ -133,14 +141,16 @@ class PublishedPost(Base):
         primary_key=True,
         autoincrement=True,
     )
-    clean_url: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
+    clean_url: Mapped[str] = mapped_column(
+        String(500), unique=True, nullable=False)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     summary: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[List[float]] = mapped_column(
         VECTOR(768).with_variant(VECTOR(768), "postgresql"),
         nullable=False,
     )
-    is_duplicate: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_duplicate: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False)
     source_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("rss_sources.id", ondelete="SET NULL"), nullable=True
     )
@@ -150,17 +160,22 @@ class PublishedPost(Base):
     llm_model_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("llm_models.id", ondelete="SET NULL"), nullable=True
     )
-    template_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    template_id: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True)
     post_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(
+        String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
     )
 
     # Relationships
-    source: Mapped[Optional["RssSource"]] = relationship(back_populates="published_posts")
-    channel: Mapped[Optional["Channel"]] = relationship(back_populates="published_posts")
-    llm_model: Mapped[Optional["LLMModel"]] = relationship(back_populates="published_posts")
+    source: Mapped[Optional["RssSource"]] = relationship(
+        back_populates="published_posts")
+    channel: Mapped[Optional["Channel"]] = relationship(
+        back_populates="published_posts")
+    llm_model: Mapped[Optional["LLMModel"]] = relationship(
+        back_populates="published_posts")
 
     # Table-level constraints and indexes
     __table_args__ = (
@@ -174,7 +189,11 @@ class PublishedPost(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<PublishedPost(id={self.id}, title={self.title[:50]}, duplicate={self.is_duplicate})>"
+        return f"<PublishedPost(id={
+            self.id}, title={
+            self.title[
+                :50]}, duplicate={
+                self.is_duplicate})>"
 
 
 class User(Base):
@@ -187,9 +206,11 @@ class User(Base):
         primary_key=True,
         autoincrement=True,
     )
-    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    username: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role: Mapped[str] = mapped_column(String(20), default="admin", nullable=False)
+    role: Mapped[str] = mapped_column(
+        String(20), default="admin", nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
     )
@@ -198,10 +219,14 @@ class User(Base):
     )
 
     # Relationships
-    logs: Mapped[List["Log"]] = relationship(back_populates="user", lazy="dynamic")
+    logs: Mapped[List["Log"]] = relationship(
+        back_populates="user", lazy="dynamic")
 
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, username={self.username}, role={self.role})>"
+        return f"<User(id={
+            self.id}, username={
+            self.username}, role={
+            self.role})>"
 
 
 class Log(Base):
@@ -220,7 +245,8 @@ class Log(Base):
     level: Mapped[str] = mapped_column(String(10), nullable=False)
     module: Mapped[str] = mapped_column(String(100), nullable=False)
     message: Mapped[str] = mapped_column(Text, nullable=False)
-    context_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(nullable=True)
+    context_json: Mapped[Optional[Dict[str, Any]]
+                         ] = mapped_column(nullable=True)
     user_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
@@ -242,9 +268,6 @@ class Log(Base):
 # =============================================================================
 # Database Engine & Session Helpers
 # =============================================================================
-
-from sqlalchemy import create_engine, Text
-from sqlalchemy.pool import NullPool
 
 
 def create_engine_from_url(database_url: str):
@@ -287,7 +310,8 @@ def create_async_engine_from_url(database_url: str):
         )
     else:
         # Convert to async PostgreSQL URL
-        async_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
+        async_url = database_url.replace(
+            "postgresql://", "postgresql+asyncpg://")
         engine = create_async_engine(
             async_url,
             pool_pre_ping=True,
@@ -301,7 +325,8 @@ def create_async_engine_from_url(database_url: str):
     level: Mapped[str] = mapped_column(String(10), nullable=False)
     module: Mapped[str] = mapped_column(String(100), nullable=False)
     message: Mapped[str] = mapped_column(Text, nullable=False)
-    context_json: Mapped[Optional[Dict[str, Any]]] = mapped_column(nullable=True)
+    context_json: Mapped[Optional[Dict[str, Any]]
+                         ] = mapped_column(nullable=True)
     user_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
@@ -335,7 +360,8 @@ class LLMModel(Base):
     provider: Mapped[str] = mapped_column(String(30), nullable=False)
     model_id: Mapped[str] = mapped_column(String(100), nullable=False)
     api_key_ref: Mapped[str] = mapped_column(String(100), nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, nullable=False
     )
@@ -346,4 +372,7 @@ class LLMModel(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<LLMModel(id={self.id}, name={self.name}, provider={self.provider})>"
+        return f"<LLMModel(id={
+            self.id}, name={
+            self.name}, provider={
+            self.provider})>"

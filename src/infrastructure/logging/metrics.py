@@ -110,6 +110,8 @@ app_info = Info(
 )
 
 # Initialize app info
+
+
 def init_metrics() -> None:
     """Initialize metrics with application info."""
     settings = get_settings()
@@ -121,23 +123,27 @@ def init_metrics() -> None:
 
 class MetricsContext:
     """Context manager for timing operations."""
-    
-    def __init__(self, histogram: Histogram, labels: Optional[Dict[str, str]] = None):
+
+    def __init__(self, histogram: Histogram,
+                 labels: Optional[Dict[str, str]] = None):
         self.histogram = histogram
         self.labels = labels or {}
         self.timer = None
-    
+
     def __enter__(self) -> "MetricsContext":
         self.timer = self.histogram.labels(**self.labels).time()
         self.timer.__enter__()
         return self
-    
+
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if self.timer:
             self.timer.__exit__(exc_type, exc_val, exc_tb)
 
 
-def increment_counter(counter: Counter, labels: Optional[Dict[str, str]] = None, value: float = 1.0) -> None:
+def increment_counter(counter: Counter,
+                      labels: Optional[Dict[str,
+                                            str]] = None,
+                      value: float = 1.0) -> None:
     """Increment a counter with labels."""
     if labels:
         counter.labels(**labels).inc(value)
@@ -145,7 +151,8 @@ def increment_counter(counter: Counter, labels: Optional[Dict[str, str]] = None,
         counter.inc(value)
 
 
-def observe_histogram(histogram: Histogram, value: float, labels: Optional[Dict[str, str]] = None) -> None:
+def observe_histogram(histogram: Histogram, value: float,
+                      labels: Optional[Dict[str, str]] = None) -> None:
     """Observe a value in a histogram with labels."""
     if labels:
         histogram.labels(**labels).observe(value)
@@ -153,7 +160,8 @@ def observe_histogram(histogram: Histogram, value: float, labels: Optional[Dict[
         histogram.observe(value)
 
 
-def set_gauge(gauge: Gauge, value: float, labels: Optional[Dict[str, str]] = None) -> None:
+def set_gauge(gauge: Gauge, value: float,
+              labels: Optional[Dict[str, str]] = None) -> None:
     """Set a gauge value with labels."""
     if labels:
         gauge.labels(**labels).set(value)

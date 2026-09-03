@@ -42,20 +42,25 @@ class TestGeneratePostStep:
         """Create a mock LLM service."""
         from application.services.llm_service import LLMService
         service = MagicMock(spec=LLMService)
-        service.generate_post = AsyncMock(side_effect=[
-            {
-                "post_text": "🚀 AI Breakthrough! Revolutionary model achieves human-level reasoning. #AI #Tech",
-                "summary": "New AI model breakthrough",
-            },
-            {
-                "post_text": "⚛️ Quantum Computing Milestone! Quantum computer solves impossible problem. #Quantum #Tech",
-                "summary": "Quantum computing breakthrough",
-            },
-        ])
+        service.generate_post = AsyncMock(
+            side_effect=[
+                {
+                    "post_text": "🚀 AI Breakthrough! Revolutionary model achieves human-level reasoning. #AI #Tech",
+                    "summary": "New AI model breakthrough",
+                },
+                {
+                    "post_text": "⚛️ Quantum Computing Milestone! Quantum computer solves impossible problem. #Quantum #Tech",
+                    "summary": "Quantum computing breakthrough",
+                },
+            ])
         return service
 
     @pytest.mark.asyncio
-    async def test_generate_post_success(self, generate_post_step, sample_extracted_articles, mock_llm_service):
+    async def test_generate_post_success(
+            self,
+            generate_post_step,
+            sample_extracted_articles,
+            mock_llm_service):
         """Test successful post generation."""
         generate_post_step._llm_service = mock_llm_service
 
@@ -80,7 +85,8 @@ class TestGeneratePostStep:
         assert post2["image_url"] is None
 
     @pytest.mark.asyncio
-    async def test_generate_post_empty_input(self, generate_post_step, mock_llm_service):
+    async def test_generate_post_empty_input(
+            self, generate_post_step, mock_llm_service):
         """Test generation with empty input."""
         generate_post_step._llm_service = mock_llm_service
 
@@ -93,7 +99,11 @@ class TestGeneratePostStep:
         mock_llm_service.generate_post.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_generate_post_template_rotation(self, generate_post_step, sample_extracted_articles, mock_llm_service):
+    async def test_generate_post_template_rotation(
+            self,
+            generate_post_step,
+            sample_extracted_articles,
+            mock_llm_service):
         """Test that template rotation works."""
         generate_post_step._llm_service = mock_llm_service
 
@@ -111,7 +121,11 @@ class TestGeneratePostStep:
             assert "template_prompt" in call.kwargs
 
     @pytest.mark.asyncio
-    async def test_generate_post_handles_errors(self, generate_post_step, sample_extracted_articles, mock_llm_service):
+    async def test_generate_post_handles_errors(
+            self,
+            generate_post_step,
+            sample_extracted_articles,
+            mock_llm_service):
         """Test handling of generation errors."""
         generate_post_step._llm_service = mock_llm_service
         mock_llm_service.generate_post = AsyncMock(side_effect=[
@@ -130,13 +144,18 @@ class TestGeneratePostStep:
         assert result.metrics["generated_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_generate_post_min_max_length(self, generate_post_step, sample_extracted_articles, mock_llm_service):
+    async def test_generate_post_min_max_length(
+            self,
+            generate_post_step,
+            sample_extracted_articles,
+            mock_llm_service):
         """Test that min/max length parameters are passed."""
         generate_post_step._llm_service = mock_llm_service
         generate_post_step._min_length = 500
         generate_post_step._max_length = 1000
 
-        context = PipelineContext(extracted_articles=sample_extracted_articles[:1])
+        context = PipelineContext(
+            extracted_articles=sample_extracted_articles[:1])
 
         result = await generate_post_step.execute(context)
 

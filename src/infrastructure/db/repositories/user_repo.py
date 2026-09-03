@@ -43,7 +43,8 @@ class SqlAlchemyUserRepository(UserRepository):
         self, username: str, password: str, role: str = "admin"
     ) -> User:
         # Use bcrypt directly to avoid passlib issues
-        password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        password_hash = bcrypt.hashpw(password.encode(
+            "utf-8"), bcrypt.gensalt()).decode("utf-8")
         model = UserModel(
             username=username,
             password_hash=password_hash,
@@ -90,9 +91,11 @@ class SqlAlchemyUserRepository(UserRepository):
         result = await self._session.execute(stmt)
         return result.rowcount > 0
 
-    async def verify_password(self, username: str, password: str) -> Optional[User]:
+    async def verify_password(self, username: str,
+                              password: str) -> Optional[User]:
         user = await self.get_by_username(username)
-        if user and bcrypt.checkpw(password.encode("utf-8"), user.password_hash.encode("utf-8")):
+        if user and bcrypt.checkpw(password.encode(
+                "utf-8"), user.password_hash.encode("utf-8")):
             return user
         return None
 

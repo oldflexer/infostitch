@@ -85,7 +85,8 @@ class MaxClient:
 
         data = response.json()
         if not data.get("ok", True):
-            raise RuntimeError(f"Max API error: {data.get('description', 'Unknown error')}")
+            raise RuntimeError(
+                f"Max API error: {data.get('description', 'Unknown error')}")
 
         return data.get("result", {})
 
@@ -128,7 +129,8 @@ class MaxClient:
 
         data = response.json()
         if not data.get("ok", True):
-            raise RuntimeError(f"Max API error: {data.get('description', 'Unknown error')}")
+            raise RuntimeError(
+                f"Max API error: {data.get('description', 'Unknown error')}")
 
         return data.get("result", {})
 

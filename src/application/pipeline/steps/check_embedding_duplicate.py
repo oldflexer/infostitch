@@ -64,7 +64,8 @@ class CheckEmbeddingDuplicateStep(PipelineStep):
                     final_posts.append(post)
 
             except Exception as e:
-                context.add_error(self.name, f"Post {post_data.get('clean_url', i)}: {e}")
+                context.add_error(
+                    self.name, f"Post {post_data.get('clean_url', i)}: {e}")
                 # On error, treat as non-duplicate to continue pipeline
                 post = Post(
                     title=post_data["title"],

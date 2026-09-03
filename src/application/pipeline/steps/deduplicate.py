@@ -32,7 +32,8 @@ class DeduplicateStep(PipelineStep):
         # Stage 1b: Jaccard similarity deduplication
         # Get recent titles from context or repo
         recent_titles = context.get_recent_titles(limit=20)
-        articles = self._dedup_service.filter_by_jaccard(articles, recent_titles)
+        articles = self._dedup_service.filter_by_jaccard(
+            articles, recent_titles)
         context.add_metric("after_jaccard_dedup", len(articles))
 
         context.deduplicated_articles = articles

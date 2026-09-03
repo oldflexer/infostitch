@@ -59,7 +59,7 @@ class SqlAlchemyChannelRepository(ChannelRepository):
     async def get_all(self, enabled_only: bool = False) -> List[Channel]:
         stmt = select(ChannelModel).order_by(ChannelModel.created_at)
         if enabled_only:
-            stmt = stmt.where(ChannelModel.enabled == True)
+            stmt = stmt.where(ChannelModel.enabled.is_(True))
         result = await self._session.execute(stmt)
         models = result.scalars().all()
         return [self._to_entity(m) for m in models]

@@ -19,7 +19,7 @@ class TestRssSource:
             last_fetch=datetime.now(timezone.utc),
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert source.id == 1
         assert source.url == "https://example.com/feed.xml"
         assert source.enabled is True
@@ -43,13 +43,13 @@ class TestRssSource:
             enabled=True,
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert source.enabled is True
         toggled = source.toggle_enabled()
         assert toggled.enabled is False
         assert toggled.id == source.id
         assert toggled.url == source.url
-        
+
         toggled2 = toggled.toggle_enabled()
         assert toggled2.enabled is True
 
@@ -61,7 +61,7 @@ class TestRssSource:
             enabled=True,
             created_at=datetime.now(timezone.utc),
         )
-        
+
         assert source.last_fetch is None
         fetched = source.mark_fetched()
         assert fetched.last_fetch is not None

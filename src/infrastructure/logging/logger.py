@@ -16,7 +16,8 @@ from infrastructure.config import get_settings
 
 
 # Context variable for correlation ID
-correlation_id_var: ContextVar[Optional[str]] = ContextVar("correlation_id", default=None)
+correlation_id_var: ContextVar[Optional[str]] = ContextVar(
+    "correlation_id", default=None)
 
 
 def get_correlation_id() -> str:
@@ -41,20 +42,23 @@ def clear_correlation_id() -> None:
     correlation_id_var.set(None)
 
 
-def add_correlation_id(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
+def add_correlation_id(logger: WrappedLogger, method_name: str,
+                       event_dict: EventDict) -> EventDict:
     """Add correlation ID to log event."""
     event_dict["correlation_id"] = get_correlation_id()
     return event_dict
 
 
-def add_timestamp(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
+def add_timestamp(logger: WrappedLogger, method_name: str,
+                  event_dict: EventDict) -> EventDict:
     """Add ISO timestamp to log event."""
     from datetime import datetime, timezone
     event_dict["timestamp"] = datetime.now(timezone.utc).isoformat()
     return event_dict
 
 
-def add_level(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
+def add_level(logger: WrappedLogger, method_name: str,
+              event_dict: EventDict) -> EventDict:
     """Add log level to event dict."""
     event_dict["level"] = method_name.upper()
     return event_dict
@@ -63,7 +67,7 @@ def add_level(logger: WrappedLogger, method_name: str, event_dict: EventDict) ->
 def setup_logging() -> None:
     """Configure structlog for the application."""
     settings = get_settings()
-    
+
     # Configure standard library logging
     import logging
     logging.basicConfig(
@@ -71,7 +75,7 @@ def setup_logging() -> None:
         stream=sys.stdout,
         level=getattr(logging, settings.log_level.upper(), logging.INFO),
     )
-    
+
     # Configure structlog
     processors = [
         structlog.contextvars.merge_contextvars,
@@ -82,12 +86,12 @@ def setup_logging() -> None:
         structlog.processors.StackInfoRenderer(),
         structlog.dev.set_exc_info,
     ]
-    
+
     if settings.log_format == "json":
         processors.append(structlog.processors.JSONRenderer())
     else:
         processors.append(structlog.dev.ConsoleRenderer(colors=True))
-    
+
     structlog.configure(
         processors=processors,
         wrapper_class=structlog.make_filtering_bound_logger(
@@ -106,15 +110,15 @@ def get_logger(name: str) -> structlog.BoundLogger:
 
 class LoggingContext:
     """Context manager for adding contextual information to logs."""
-    
+
     def __init__(self, **kwargs: Any):
         self.kwargs = kwargs
         self.token = None
-    
+
     def __enter__(self) -> "LoggingContext":
         self.token = structlog.contextvars.bind_contextvars(**self.kwargs)
         return self
-    
+
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         if self.token:
             structlog.contextvars.unbind_contextvars(*self.kwargs.keys())

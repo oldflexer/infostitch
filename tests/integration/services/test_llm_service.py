@@ -44,9 +44,12 @@ class TestLLMService:
     async def test_rank_articles(self, llm_service):
         """Test article ranking."""
         articles = [
-            {"id": 1, "title": "AI Breakthrough", "summary": "Revolutionary AI model"},
-            {"id": 2, "title": "Python Release", "summary": "Python 3.13 released"},
-            {"id": 3, "title": "Quantum Computing", "summary": "Quantum milestone"},
+            {"id": 1, "title": "AI Breakthrough",
+                "summary": "Revolutionary AI model"},
+            {"id": 2, "title": "Python Release",
+                "summary": "Python 3.13 released"},
+            {"id": 3, "title": "Quantum Computing",
+                "summary": "Quantum milestone"},
         ]
         recent_titles = ["Old Article"]
 

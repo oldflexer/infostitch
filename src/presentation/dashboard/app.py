@@ -22,6 +22,8 @@ from presentation.dashboard.pages.logs import render_logs
 from presentation.dashboard.pages.settings import render_settings
 from presentation.dashboard.pages.metrics import render_metrics
 from presentation.dashboard.pages.manual_actions import render_manual_actions
+
+
 async def initialize_database() -> None:
     """Initialize database connection."""
     if not st.session_state.db_initialized:
@@ -32,7 +34,8 @@ async def initialize_database() -> None:
 def verify_password(password: str, password_hash: str) -> bool:
     """Verify password against hash."""
     import bcrypt
-    return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
+    return bcrypt.checkpw(password.encode('utf-8'),
+                          password_hash.encode('utf-8'))
 
 
 async def authenticate_user(username: str, password: str) -> Optional[dict]:
@@ -42,20 +45,24 @@ async def authenticate_user(username: str, password: str) -> Optional[dict]:
         user_repo = SqlAlchemyUserRepository(session)
         user = await user_repo.get_by_username(username)
         if user and verify_password(password, user.password_hash):
-            return {"id": user.id, "username": user.username, "role": user.role}
+            return {
+                "id": user.id,
+                "username": user.username,
+                "role": user.role}
     return None
 
 
 def login_form() -> None:
     """Render login form."""
-    st.markdown('<div class="main-header">📰 InfoStitch Dashboard</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">📰 InfoStitch Dashboard</div>',
+                unsafe_allow_html=True)
     st.markdown("Please log in to access the dashboard.")
-    
+
     with st.form("login_form"):
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         submitted = st.form_submit_button("Login", use_container_width=True)
-        
+
         if submitted:
             if username and password:
                 user = asyncio.run(authenticate_user(username, password))
@@ -80,9 +87,12 @@ def logout() -> None:
 def render_sidebar() -> None:
     """Render sidebar navigation."""
     with st.sidebar:
-        st.markdown(f"**Logged in as:** {st.session_state.user['username']} ({st.session_state.user['role']})")
+        st.markdown(
+            f"**Logged in as:** {
+                st.session_state.user['username']} ({
+                st.session_state.user['role']})")
         st.divider()
-        
+
         # Navigation
         pages = {
             "📊 Overview": "overview",
@@ -91,23 +101,24 @@ def render_sidebar() -> None:
             "⚙️ Settings": "settings",
             "🔧 Manual Actions": "manual_actions",
         }
-        
+
         selected_page = st.radio(
             "Navigation",
             options=list(pages.keys()),
             format_func=lambda x: x,
             key="navigation",
         )
-        
+
         st.session_state.current_page = pages[selected_page]
-        
+
         st.divider()
-        
+
         # User info
         st.caption(f"Role: {st.session_state.user['role']}")
-        
+
         if st.button("🚪 Logout", use_container_width=True):
             logout()
+
 
 # Page configuration
 st.set_page_config(
@@ -146,10 +157,10 @@ st.markdown("""
 async def render_page_content() -> None:
     """Render the selected page content."""
     page = st.session_state.get("current_page", "overview")
-    
+
     # Initialize database
     await initialize_database()
-    
+
     # Get database session
     db_manager = get_db_manager()
     async with db_manager.session() as session:
@@ -160,10 +171,10 @@ async def render_page_content() -> None:
         setting_repo = SqlAlchemySettingRepository(session)
         post_repo = SqlAlchemyPostRepository(session)
         log_repo = SqlAlchemyLogRepository(session)
-        
+
         # Load settings
         db_settings = await setting_repo.get_all()
-        
+
         # Render selected page
         if page == "overview":
             await render_overview(
@@ -214,7 +225,7 @@ def init_session_state() -> None:
 def main() -> None:
     """Main dashboard entry point."""
     init_session_state()
-    
+
     if not st.session_state.authenticated:
         login_form()
     else:

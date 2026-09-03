@@ -16,7 +16,7 @@ class TestPostRepositoryQueries2:
         """Test getting posts by source ID."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add posts from different sources
         post1 = Post(
             id=None,
@@ -48,12 +48,12 @@ class TestPostRepositoryQueries2:
         )
         await post_repo.add(post1)
         await post_repo.add(post2)
-        
+
         # Get by source 1
         posts = await post_repo.get_by_source(source_id=1, limit=100)
         assert len(posts) == 1
         assert posts[0].source_id == 1
-        
+
         # Get by source 2
         posts = await post_repo.get_by_source(source_id=2, limit=100)
         assert len(posts) == 1
@@ -64,7 +64,7 @@ class TestPostRepositoryQueries2:
         """Test getting posts by channel ID."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add posts from different channels
         post1 = Post(
             id=None,
@@ -96,7 +96,7 @@ class TestPostRepositoryQueries2:
         )
         await post_repo.add(post1)
         await post_repo.add(post2)
-        
+
         # Get by channel 1
         posts = await post_repo.get_by_channel(channel_id=1, limit=100)
         assert len(posts) == 1
@@ -107,7 +107,7 @@ class TestPostRepositoryQueries2:
         """Test getting duplicate posts."""
         embedding = Embedding.from_list([0.1] * 768)
         now = datetime.now(timezone.utc)
-        
+
         # Add unique post
         post1 = Post(
             id=None,
@@ -140,7 +140,7 @@ class TestPostRepositoryQueries2:
         )
         await post_repo.add(post1)
         await post_repo.add(post2)
-        
+
         # Get duplicates
         duplicates = await post_repo.get_duplicates(limit=100)
         assert len(duplicates) == 1
