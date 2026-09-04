@@ -45,6 +45,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 async def run_pipeline(dry_run: bool = False) -> int:
     """Run the news aggregation pipeline once."""
+    import signal
+
     print("🚀 Starting InfoStitch pipeline...")
 
     settings = get_settings()
@@ -54,24 +56,27 @@ async def run_pipeline(dry_run: bool = False) -> int:
     if dry_run:
         print("🔍 DRY RUN MODE - No publishing")
 
-    # Initialize metrics
     init_metrics()
 
-    # Initialize database
     await init_db()
 
-    # Get database session
+    shutdown_event = asyncio.Event()
+
+    def signal_handler(signum, frame):
+        print(f"🛑 Received signal {signum}, initiating graceful shutdown...")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     db_manager = get_db_manager()
     async with db_manager.session() as session:
-        # Initialize repositories
         source_repo = SqlAlchemySourceRepository(session)
         post_repo = SqlAlchemyPostRepository(session)
         setting_repo = SqlAlchemySettingRepository(session)
 
-        # Load settings from DB
         db_settings = await setting_repo.get_all()
 
-        # Initialize services
         llm_service = LLMService()
         embedding_service = EmbeddingService()
         image_service = ImageService()
@@ -85,21 +90,17 @@ async def run_pipeline(dry_run: bool = False) -> int:
         publisher_service = PublisherService()
         notification_service = NotificationService()
 
-        # Get enabled RSS sources
         rss_sources = await source_repo.get_enabled()
 
-        # Build pipeline context
         context = PipelineContext(
             rss_sources=rss_sources,
             settings=db_settings,
         )
 
-        # Build pipeline
         pipeline = Pipeline(steps=[
             FetchRSSStep(),
             DeduplicateStep(dedup_service),
-            SelectTopStep(
-                LLMService(), max_articles=settings.max_articles_per_run),
+            SelectTopStep(LLMService(), max_articles=settings.max_articles_per_run),
             ExtractContentStep(ImageService()),
             GeneratePostStep(LLMService()),
             ComputeEmbeddingStep(EmbeddingService()),
@@ -108,33 +109,37 @@ async def run_pipeline(dry_run: bool = False) -> int:
         ], notification_service=notification_service)
 
         try:
-            print("📡 Running pipeline...")
-            context = await pipeline.run(context)
+            print("📊 Running pipeline...")
+            async def run_with_shutdown_check():
+                return await pipeline.run(context)
+            pipeline_task = asyncio.create_task(run_with_shutdown_check())
+            done, pending = await asyncio.wait(
+            [pipeline_task, asyncio.create_task(shutdown_event.wait())],
+            return_when=asyncio.FIRST_COMPLETED
+            )
+            if shutdown_event.is_set():
+                print("🛑 Shutdown requested, cancelling pipeline...")
+                pipeline_task.cancel()
+                try:
+                    await pipeline_task
+                except asyncio.CancelledError:
+                    pass
+                print("✅ Pipeline cancelled gracefully")
+                return 130
+            context = pipeline_task.result()
 
-            # Print results
             print(f"\n📊 Pipeline Results:")
             print(f"  Fetched: {context.metrics.get('total_fetched', 0)}")
-            print(
-                f"  After URL dedup: {
-                    context.metrics.get(
-                        'after_url_dedup',
-                        0)}")
-            print(
-                f"  After Jaccard dedup: {
-                    context.metrics.get(
-                        'after_jaccard_dedup',
-                        0)}")
+            print(f"  After URL dedup: {context.metrics.get('after_url_dedup', 0)}")
+            print(f"  After Jaccard dedup: {context.metrics.get('after_jaccard_dedup', 0)}")
             print(f"  Selected: {context.metrics.get('selected_count', 0)}")
             print(f"  Extracted: {context.metrics.get('extracted_count', 0)}")
             print(f"  Generated: {context.metrics.get('generated_count', 0)}")
-            print(
-                f"  Embeddings: {
-                    context.metrics.get(
-                        'embeddings_computed',
-                        0)}")
+            print(f"  Embeddings: {context.metrics.get('embeddings_computed', 0)}")
             print(f"  Final posts: {context.metrics.get('final_posts', 0)}")
             print(f"  Duplicates: {context.metrics.get('duplicate_posts', 0)}")
             print(f"  Published: {context.metrics.get('published_count', 0)}")
+
 
             if context.errors:
                 print(f"\n⚠️  Errors ({len(context.errors)}):")
@@ -148,7 +153,6 @@ async def run_pipeline(dry_run: bool = False) -> int:
             print(f"\n❌ Pipeline failed: {e}")
             return 1
         finally:
-            # Close services
             await llm_service.close()
             await embedding_service.close()
             await image_service.close()
@@ -157,8 +161,6 @@ async def run_pipeline(dry_run: bool = False) -> int:
 
     await close_db()
     return 0
-
-
 async def clear_old_data(days: int = 90) -> int:
     """Clear old published posts."""
     print(f"🗑️  Clearing posts older than {days} days...")
