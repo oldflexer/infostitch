@@ -6,10 +6,15 @@ from __future__ import annotations
 
 from typing import List
 
+import structlog
+from infrastructure.logging.logger import LoggingContext
+
 from application.dto.pipeline_context import PipelineContext
 from application.pipeline.step import PipelineStep
 from application.services.publisher_service import PublisherService
 from domain.entities.post import Post
+
+logger = structlog.get_logger(__name__)
 
 
 class PublishStep(PipelineStep):
@@ -25,29 +30,36 @@ class PublishStep(PipelineStep):
     async def execute(self, context: PipelineContext) -> PipelineContext:
         results = {}
 
-        for post in context.final_posts:
-            try:
-                # Prepare final text with source link and signature
-                final_text = self._format_post(post)
+        with LoggingContext(step="publish", total_posts=len(context.final_posts)):
+            for post in context.final_posts:
+                with LoggingContext(article_id=post.id, post_url=post.clean_url):
+                    try:
+                        # Prepare final text with source link and signature
+                        final_text = self._format_post(post)
 
-                # Publish to all channels
-                result = await self._publisher_service.publish_to_all(
-                    text=final_text,
-                    image_url=post.image_url,
-                )
+                        # Publish to all channels
+                        logger.info("Publishing post", article_id=post.id, url=post.clean_url)
+                        result = await self._publisher_service.publish_to_all(
+                            text=final_text,
+                            image_url=post.image_url,
+                        )
 
-                results[post.clean_url] = result
+                        results[post.clean_url] = result
 
-                # Mark post as published (in real implementation, save to DB)
-                # post.mark_published()
+                        # Mark post as published (in real implementation, save to DB)
+                        # post.mark_published()
 
-            except Exception as e:
-                context.add_error(self.name, f"Post {post.clean_url}: {e}")
-                results[post.clean_url] = {"error": str(e)}
+                        logger.info("Post published", article_id=post.id, channels=list(result.keys()))
+
+                    except Exception as e:
+                        logger.error("Post publishing failed", article_id=post.id, error=str(e))
+                        context.add_error(self.name, f"Post {post.clean_url}: {e}")
+                        results[post.clean_url] = {"error": str(e)}
 
         context.published_results = results
         context.add_metric("published_count", len(
             [r for r in results.values() if not r.get("error")]))
+        logger.info("Publishing completed", total=len(results), successful=context.metrics.get("published_count", 0))
         return context
 
     def _format_post(self, post: Post) -> str:

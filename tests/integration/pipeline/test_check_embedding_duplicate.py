@@ -51,8 +51,9 @@ class TestCheckEmbeddingDuplicateStep:
         """Create a mock deduplication service."""
         from application.services.deduplication_service import DeduplicationService
         service = MagicMock(spec=DeduplicationService)
+        # Return dict for duplicate, None for non-duplicate (matching real service)
         service.is_duplicate_by_embedding = AsyncMock(
-            side_effect=[False, True])
+            side_effect=[None, {"post_id": 1, "title": "Existing Post", "similarity": 0.9}])
         return service
 
     @pytest.mark.asyncio
@@ -95,7 +96,7 @@ class TestCheckEmbeddingDuplicateStep:
         """Test when all posts are unique."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
         mock_dedup_service.is_duplicate_by_embedding = AsyncMock(
-            return_value=False)
+            return_value=None)
 
         context = PipelineContext(
             generated_posts=sample_generated_posts,
@@ -119,7 +120,7 @@ class TestCheckEmbeddingDuplicateStep:
         """Test when all posts are duplicates."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
         mock_dedup_service.is_duplicate_by_embedding = AsyncMock(
-            return_value=True)
+            return_value={"post_id": 1, "title": "Existing Post", "similarity": 0.9})
 
         context = PipelineContext(
             generated_posts=sample_generated_posts,
@@ -159,7 +160,7 @@ class TestCheckEmbeddingDuplicateStep:
         """Test handling of service errors."""
         check_embedding_duplicate_step._dedup_service = mock_dedup_service
         mock_dedup_service.is_duplicate_by_embedding = AsyncMock(side_effect=[
-            False,
+            None,
             Exception("DB connection error"),
         ])
 
