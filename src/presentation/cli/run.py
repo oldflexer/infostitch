@@ -289,6 +289,10 @@ def main() -> int:
     metrics_parser.add_argument(
         "--port", type=int, default=9090, help="Port to listen on (default: 9090)")
 
+    # Validate secrets
+    validate_parser = subparsers.add_parser(
+        "validate-secrets", help="Validate required secrets for production")
+
     args = parser.parse_args()
 
     # Route to appropriate handler
@@ -314,7 +318,34 @@ def main() -> int:
         return asyncio.run(readiness())
     elif args.command == "metrics-server":
         return asyncio.run(metrics_server(args.port))
+    elif args.command == "validate-secrets":
+        return asyncio.run(validate_secrets())
 
+    return 1
+
+
+async def validate_secrets() -> int:
+    """Validate required secrets for production mode."""
+    from infrastructure.config import Settings
+
+    # Create fresh settings instance to pick up env changes
+    settings = Settings()
+    missing = settings.validate_required_secrets()
+
+    print(f"🔍 Validating secrets for environment: {settings.app_env}")
+    print()
+
+    if not missing:
+        print("✅ All required secrets are configured")
+        return 0
+
+    print("❌ Missing required secrets:")
+    for secret in missing:
+        print(f"  - {secret}")
+
+    print()
+    print("💡 Set these in your .env file or environment variables")
+    print("   See .env.example for reference")
     return 1
 
 

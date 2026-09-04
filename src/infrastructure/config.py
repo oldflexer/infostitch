@@ -122,6 +122,54 @@ class Settings(BaseSettings):
 
         return configs
 
+    def validate_required_secrets(self) -> List[str]:
+        """Validate required secrets for production mode.
+
+        Returns:
+            List of missing secret names (empty if all present)
+        """
+        missing = []
+
+        if self.is_production:
+            # Required for production
+            if not self.gemini_api_key or self.gemini_api_key == "your_gemini_api_key_here":
+                missing.append("GEMINI_API_KEY")
+
+            if not self.jina_api_key or self.jina_api_key == "your_jina_api_key_here":
+                missing.append("JINA_API_KEY")
+
+            # At least one publisher required
+            publishers_configured = 0
+            if not self.telegram_bot_token or self.telegram_bot_token == "your_telegram_bot_token_here":
+                missing.append("TELEGRAM_BOT_TOKEN")
+            else:
+                publishers_configured += 1
+            if not self.telegram_chat_id or self.telegram_chat_id == "your_channel_chat_id_here":
+                missing.append("TELEGRAM_CHAT_ID")
+
+            if not self.vk_access_token or self.vk_access_token == "your_vk_access_token_here":
+                missing.append("VK_ACCESS_TOKEN")
+            else:
+                publishers_configured += 1
+            if not self.vk_group_id or self.vk_group_id == "your_vk_group_id_here":
+                missing.append("VK_GROUP_ID")
+
+            if not self.max_bot_token or self.max_bot_token == "your_max_bot_token_here":
+                missing.append("MAX_BOT_TOKEN")
+            else:
+                publishers_configured += 1
+            if not self.max_chat_id or self.max_chat_id == "your_max_chat_id_here":
+                missing.append("MAX_CHAT_ID")
+
+            if publishers_configured == 0:
+                missing.append("AT_LEAST_ONE_PUBLISHER")
+
+            # Admin credentials
+            if self.admin_password == "admin123":
+                missing.append("ADMIN_PASSWORD (default detected)")
+
+        return missing
+
 
 @lru_cache
 def get_settings() -> Settings:
