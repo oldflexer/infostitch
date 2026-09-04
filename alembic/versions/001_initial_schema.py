@@ -59,8 +59,7 @@ def upgrade() -> None:
 
     # settings
     op.create_table(
-# published_posts
-    op.create_table(
+
         'published_posts',
         sa.Column('id', sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column('clean_url', sa.String(500), nullable=False),
@@ -123,10 +122,3 @@ def downgrade() -> None:
     op.drop_table('llm_models')
     op.drop_table('channels')
     op.drop_table('rss_sources')
-        'settings',
-        sa.Column('key', sa.String(100), nullable=False),
-        sa.Column('value', sa.Text(), nullable=False),
-        sa.Column('description', sa.Text(), nullable=True),
-        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()),
-        sa.PrimaryKeyConstraint('key'),
-    )

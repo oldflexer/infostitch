@@ -90,9 +90,17 @@ async def run_migrations_online() -> None:
     url = get_database_url()
 
     if url.startswith("sqlite"):
-        async_url = url.replace("sqlite://", "sqlite+aiosqlite://")
+        if "aiosqlite" not in url:
+            async_url = url.replace("sqlite://", "sqlite+aiosqlite://")
+        else:
+            async_url = url
+    elif url.startswith("postgresql"):
+        if "asyncpg" not in url:
+            async_url = url.replace("postgresql://", "postgresql+asyncpg://")
+        else:
+            async_url = url
     else:
-        async_url = url.replace("postgresql://", "postgresql+asyncpg://")
+        async_url = url
 
     connectable = create_async_engine(
         async_url,
