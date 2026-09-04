@@ -283,6 +283,12 @@ def main() -> int:
     readiness_parser = subparsers.add_parser(
         "readiness", help="Run readiness check (database only)")
 
+    # Metrics server
+    metrics_parser = subparsers.add_parser(
+        "metrics-server", help="Start Prometheus metrics HTTP server")
+    metrics_parser.add_argument(
+        "--port", type=int, default=9090, help="Port to listen on (default: 9090)")
+
     args = parser.parse_args()
 
     # Route to appropriate handler
@@ -306,8 +312,39 @@ def main() -> int:
         return asyncio.run(health())
     elif args.command == "readiness":
         return asyncio.run(readiness())
+    elif args.command == "metrics-server":
+        return asyncio.run(metrics_server(args.port))
 
     return 1
+
+
+async def metrics_server(port: int = 9090) -> int:
+    """Start Prometheus metrics HTTP server."""
+    from prometheus_client import start_http_server
+    import signal
+
+    print(f"📊 Starting Prometheus metrics server on port {port}...")
+
+    # Initialize metrics
+    init_metrics()
+
+    # Start HTTP server in background thread
+    start_http_server(port)
+    print(f"✅ Metrics server running at http://0.0.0.0:{port}/metrics")
+
+    # Keep running until interrupted
+    stop_event = asyncio.Event()
+
+    def signal_handler(signum, frame):
+        print("\n🛑 Shutting down metrics server...")
+        stop_event.set()
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    await stop_event.wait()
+    print("✅ Metrics server stopped")
+    return 0
 
 
 if __name__ == "__main__":
