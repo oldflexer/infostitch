@@ -29,6 +29,7 @@ from application.pipeline.pipeline import Pipeline
 from infrastructure.logging.metrics import init_metrics
 from infrastructure.db.session import get_db_manager, init_db, close_db
 from infrastructure.config import get_settings
+from infrastructure.health import health_check, readiness_check
 
 import argparse
 import asyncio
@@ -205,6 +206,45 @@ async def show_config() -> int:
     return 0
 
 
+async def health() -> int:
+    """Run full health check."""
+    print("🏥 Running health check...")
+    result = await health_check()
+
+    print(f"\nOverall Status: {result.status.value.upper()}")
+    print(f"Uptime: {result.uptime_seconds:.1f}s")
+    print(f"Version: {result.version}")
+
+    for name, check in result.checks.items():
+        status_icon = {
+            "healthy": "✅",
+            "degraded": "⚠️",
+            "unhealthy": "❌",
+        }.get(check.status.value, "❓")
+
+        print(f"\n  {status_icon} {name}: {check.status.value}")
+        print(f"     Message: {check.message}")
+        print(f"     Latency: {check.latency_ms:.1f}ms")
+        if check.details:
+            for k, v in check.details.items():
+                print(f"     {k}: {v}")
+
+    return 0 if result.status.value == "healthy" else 1
+
+
+async def readiness() -> int:
+    """Run readiness check (database only)."""
+    print("🔍 Running readiness check...")
+    result = await readiness_check()
+
+    print(f"\nReadiness: {result.status.value.upper()}")
+    for name, check in result.checks.items():
+        status_icon = "✅" if check.status.value == "healthy" else "❌"
+        print(f"  {status_icon} {name}: {check.message} ({check.latency_ms:.1f}ms)")
+
+    return 0 if result.status.value == "healthy" else 1
+
+
 def main() -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -235,6 +275,14 @@ def main() -> int:
     seed_parser = subparsers.add_parser(
         "seed", help="Seed database with defaults")
 
+    # Health check
+    health_parser = subparsers.add_parser(
+        "health", help="Run full health check")
+
+    # Readiness check
+    readiness_parser = subparsers.add_parser(
+        "readiness", help="Run readiness check (database only)")
+
     args = parser.parse_args()
 
     # Route to appropriate handler
@@ -254,6 +302,10 @@ def main() -> int:
         from scripts.seed import main as seed_main
         asyncio.run(seed_main())
         return 0
+    elif args.command == "health":
+        return asyncio.run(health())
+    elif args.command == "readiness":
+        return asyncio.run(readiness())
 
     return 1
 
