@@ -204,3 +204,176 @@ class TestSqlAlchemyChannelRepository:
         assert result.id == 1
         assert result.name == "Test Channel"
 
+    @pytest.mark.asyncio
+    async def test_get_by_id_not_found(self, repo, mock_session):
+        """Test get_by_id when not found."""
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = None
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.get_by_id(999)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_get_by_name(self, repo, mock_session):
+        """Test get_by_name."""
+        mock_model = MagicMock()
+        mock_model.id = 1
+        mock_model.name = "Test Channel"
+        mock_model.type = "telegram"
+        mock_model.enabled = True
+        mock_model.config_json = {"chat_id": "12345", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}
+        mock_model.created_at = datetime.now(timezone.utc)
+
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = mock_model
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.get_by_name("Test Channel")
+
+        assert result is not None
+        assert result.name == "Test Channel"
+
+    @pytest.mark.asyncio
+    async def test_get_all(self, repo, mock_session):
+        """Test get_all."""
+        mock_model = MagicMock()
+        mock_model.id = 1
+        mock_model.name = "Test Channel"
+        mock_model.type = "telegram"
+        mock_model.enabled = True
+        mock_model.config_json = {"chat_id": "12345", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}
+        mock_model.created_at = datetime.now(timezone.utc)
+
+        mock_result = MagicMock()
+        mock_result.scalars.return_value.all.return_value = [mock_model]
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.get_all()
+
+        assert len(result) == 1
+        assert result[0].name == "Test Channel"
+
+    @pytest.mark.asyncio
+    async def test_get_all_enabled_only(self, repo, mock_session):
+        """Test get_all with enabled_only=True."""
+        mock_model = MagicMock()
+        mock_model.id = 1
+        mock_model.name = "Test Channel"
+        mock_model.type = "telegram"
+        mock_model.enabled = True
+        mock_model.config_json = {"chat_id": "12345", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}
+        mock_model.created_at = datetime.now(timezone.utc)
+
+        mock_result = MagicMock()
+        mock_result.scalars.return_value.all.return_value = [mock_model]
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.get_all(enabled_only=True)
+
+        assert len(result) == 1
+        assert result[0].enabled is True
+
+    @pytest.mark.asyncio
+    async def test_get_enabled(self, repo, mock_session):
+        """Test get_enabled delegates to get_all."""
+        mock_model = MagicMock()
+        mock_model.id = 1
+        mock_model.name = "Test Channel"
+        mock_model.type = "telegram"
+        mock_model.enabled = True
+        mock_model.config_json = {"chat_id": "12345", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}
+        mock_model.created_at = datetime.now(timezone.utc)
+
+        mock_result = MagicMock()
+        mock_result.scalars.return_value.all.return_value = [mock_model]
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.get_enabled()
+
+        assert len(result) == 1
+        assert result[0].enabled is True
+
+    @pytest.mark.asyncio
+    async def test_get_by_type(self, repo, mock_session):
+        """Test get_by_type."""
+        mock_model = MagicMock()
+        mock_model.id = 1
+        mock_model.name = "Test Channel"
+        mock_model.type = "telegram"
+        mock_model.enabled = True
+        mock_model.config_json = {"chat_id": "12345", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}
+        mock_model.created_at = datetime.now(timezone.utc)
+
+        mock_result = MagicMock()
+        mock_result.scalars.return_value.all.return_value = [mock_model]
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.get_by_type("telegram")
+
+        assert len(result) == 1
+        assert result[0].type == "telegram"
+
+    @pytest.mark.asyncio
+    async def test_update(self, repo, sample_channel, mock_session):
+        """Test update channel."""
+        mock_model = MagicMock()
+        mock_model.id = 1
+        mock_model.name = "Old Name"
+        mock_model.type = "telegram"
+        mock_model.enabled = True
+        mock_model.config_json = {"chat_id": "12345", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}
+        mock_model.created_at = datetime.now(timezone.utc)
+
+        mock_session.get.return_value = mock_model
+        mock_session.flush = AsyncMock()
+        mock_session.refresh = AsyncMock()
+
+        sample_channel.name = "Updated Name"
+        result = await repo.update(sample_channel)
+
+        assert result.name == "Updated Name"
+        assert mock_model.name == "Updated Name"
+        mock_session.flush.assert_called_once()
+        mock_session.refresh.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_update_not_found(self, repo, sample_channel, mock_session):
+        """Test update when channel not found."""
+        mock_session.get.return_value = None
+
+        with pytest.raises(ValueError, match="Channel 1 not found"):
+            await repo.update(sample_channel)
+
+    @pytest.mark.asyncio
+    async def test_delete(self, repo, mock_session):
+        """Test delete channel."""
+        mock_result = MagicMock()
+        mock_result.rowcount = 1
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.delete(1)
+
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_delete_not_found(self, repo, mock_session):
+        """Test delete when channel not found."""
+        mock_result = MagicMock()
+        mock_result.rowcount = 0
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.delete(999)
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_count(self, repo, mock_session):
+        """Test count channels."""
+        mock_result = MagicMock()
+        mock_result.scalar.return_value = 5
+        mock_session.execute.return_value = mock_result
+
+        result = await repo.count()
+
+        assert result == 5
+
