@@ -172,6 +172,30 @@ class GeminiClient:
         return embeddings
 
 
+    async def count_tokens(self, text: str) -> int:
+        """Count tokens in text."""
+        url = f"{self._base_url}/models/{self._model}:countTokens"
+
+        payload = {"contents": [{"parts": [{"text": text}]}]}
+
+        response = await self.client.post(
+            url,
+            headers=self._get_headers(),
+            json=payload,
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        return data.get("totalTokens", 0)
+
+    def _get_headers(self) -> Dict[str, str]:
+        """Get request headers."""
+        return {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self._api_key,
+        }
+
+
 class MockGeminiClient:
     """Mock Gemini client for testing."""
 
@@ -217,26 +241,3 @@ class MockGeminiClient:
         task_type: str = "RETRIEVAL_DOCUMENT",
     ) -> List[List[float]]:
         return [await self.generate_embedding(t, model, task_type) for t in texts]
-
-    async def count_tokens(self, text: str) -> int:
-        """Count tokens in text."""
-        url = f"{self._base_url}/models/{self._model}:countTokens"
-
-        payload = {"contents": [{"parts": [{"text": text}]}]}
-
-        response = await self.client.post(
-            url,
-            headers=self._get_headers(),
-            json=payload,
-        )
-        response.raise_for_status()
-
-        data = response.json()
-        return data.get("totalTokens", 0)
-
-    def _get_headers(self) -> Dict[str, str]:
-        """Get request headers."""
-        return {
-            "Content-Type": "application/json",
-            "x-goog-api-key": self._api_key,
-        }
