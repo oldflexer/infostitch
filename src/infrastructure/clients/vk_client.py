@@ -7,7 +7,6 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 import httpx
-from tenacity import retry, stop_after_attempt, wait_exponential_jitter
 
 
 class VKClient:
@@ -89,13 +88,17 @@ class VKClient:
         hash: str,
     ) -> List[Dict[str, Any]]:
         """Save uploaded photo to wall."""
-        return await self._call(
+        result = await self._call(
             "photos.saveWallPhoto",
             group_id=self._group_id,
             server=server,
             photo=photo,
             hash=hash,
         )
+        # VK API returns a list of photo objects
+        if isinstance(result, list):
+            return result
+        return [result]
 
     async def wall_post(
         self,

@@ -4,7 +4,6 @@ In-memory TTL cache for API responses.
 """
 from __future__ import annotations
 
-import time
 from typing import Any, Dict, Optional
 
 from cachetools import TTLCache
@@ -84,7 +83,7 @@ def get_cache() -> CacheService:
     global _cache_instance
     if _cache_instance is None:
         from infrastructure.config import get_settings
-        settings = get_settings()
+        _ = get_settings()  # Initialize settings
         _cache_instance = CacheService(
             maxsize=1000,
             ttl=3600,

@@ -4,8 +4,6 @@
 Run after migrations to populate initial data.
 """
 import asyncio
-import json
-from passlib.hash import bcrypt
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

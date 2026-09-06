@@ -32,7 +32,7 @@ from sqlalchemy.orm import (
 )
 
 if TYPE_CHECKING:
-    from sqlalchemy.engine import Connection
+    pass
 
 
 class Base(DeclarativeBase):

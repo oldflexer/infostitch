@@ -4,18 +4,15 @@ Provides configurable retry mechanisms with exponential backoff and circuit brea
 """
 from __future__ import annotations
 
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Awaitable, Callable, Optional, Type, TypeVar, Union
 
 from tenacity import (
     AsyncRetrying,
-    RetryCallState,
     before_sleep_log,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential_jitter,
 )
-from tenacity.stop import stop_base
-from tenacity.wait import wait_base
 
 import structlog
 
@@ -55,7 +52,7 @@ class CircuitBreaker:
             result = func(*args, **kwargs)
             self.on_success()
             return result
-        except self.expected_exception as e:
+        except self.expected_exception as _:
             self.on_failure()
             raise
 
@@ -75,7 +72,7 @@ class CircuitBreaker:
             result = await func(*args, **kwargs)
             self.on_success()
             return result
-        except self.expected_exception as e:
+        except self.expected_exception as _:
             self.on_failure()
             raise
 
@@ -128,7 +125,7 @@ def get_retry_policy(
 
 
 async def retry_async(
-    func: Callable[..., T],
+    func: Callable[..., Awaitable[T]],
     *args: Any,
     max_attempts: int = 3,
     base_delay: float = 1.0,
@@ -224,7 +221,7 @@ def retry_sync(
             result = await func(*args, **kwargs)
             self.on_success()
             return result
-        except self.expected_exception as e:
+        except self.expected_exception as _:
             self.on_failure()
             raise
 
