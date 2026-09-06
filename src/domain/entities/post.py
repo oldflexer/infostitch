@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from domain.value_objects.embedding import Embedding
 from domain.value_objects.template import Template
@@ -51,7 +51,7 @@ class Post:
         """Count characters in post content."""
         return len(self.content)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "id": self.id,

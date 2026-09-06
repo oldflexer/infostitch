@@ -5,7 +5,7 @@ Supports both SQLite (dev) and PostgreSQL + pgvector (prod).
 """
 from __future__ import annotations
 from sqlalchemy.pool import NullPool
-from sqlalchemy import create_engine, Text
+from sqlalchemy import create_engine, text
 
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
@@ -32,7 +32,7 @@ from sqlalchemy.orm import (
 )
 
 if TYPE_CHECKING:
-    from sqlalchemy.engine import Engine
+    from sqlalchemy.engine import Connection
 
 
 class Base(DeclarativeBase):
@@ -40,7 +40,7 @@ class Base(DeclarativeBase):
 
     # SQLite doesn't support JSONB, use JSON instead
     # PostgreSQL will use JSONB via dialect-specific type
-    type_annotation_map = {
+    type_annotation_map: dict[type, Any] = {
         Dict[str, Any]: JSON().with_variant(JSONB, "postgresql"),
         List[float]: VECTOR(768).with_variant(VECTOR(768), "postgresql"),
     }
@@ -184,7 +184,7 @@ class PublishedPost(Base):
         Index(
             "ix_published_posts_is_duplicate",
             "is_duplicate",
-            postgresql_where=Text("is_duplicate = false"),
+            postgresql_where=text("is_duplicate = false"),
         ),
     )
 
@@ -284,7 +284,7 @@ def create_engine_from_url(database_url: str):
         )
         # Enable WAL mode
         with engine.connect() as conn:
-            conn.execute(Text("PRAGMA journal_mode=WAL;"))
+            conn.execute(text("PRAGMA journal_mode=WAL;"))
     else:
         # PostgreSQL
         engine = create_engine(

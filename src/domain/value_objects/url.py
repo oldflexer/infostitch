@@ -4,7 +4,6 @@ Validates and normalizes URLs for consistent storage and comparison.
 """
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from urllib.parse import urlparse, urlunparse
 
@@ -123,7 +122,7 @@ class URL:
         }
 
         if parsed.query:
-            params = []
+            params: List[str] = []
             for param in parsed.query.split("&"):
                 key = param.split("=")[0] if "=" in param else param
                 if key not in tracking_params:

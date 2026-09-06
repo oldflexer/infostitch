@@ -5,7 +5,7 @@ Shared data passed between pipeline steps.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from domain.entities.article import Article
 from domain.entities.post import Post

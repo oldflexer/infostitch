@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Dict, Optional
 
 
 @dataclass(slots=True)
@@ -33,7 +33,7 @@ class LLMModel:
         if not self.api_key_ref:
             raise ValueError("API key reference cannot be empty")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,

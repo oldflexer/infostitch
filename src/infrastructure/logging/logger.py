@@ -7,7 +7,7 @@ from __future__ import annotations
 import sys
 import uuid
 from contextvars import ContextVar
-from typing import Any, Dict, Optional
+from typing import Any, List, Optional
 
 import structlog
 from structlog.types import EventDict, WrappedLogger
@@ -77,7 +77,7 @@ def setup_logging() -> None:
     )
 
     # Configure structlog
-    processors = [
+    processors: List[Any] = [
         structlog.contextvars.merge_contextvars,
         add_correlation_id,
         add_timestamp,

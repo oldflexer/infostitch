@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from domain.value_objects.url import URL
 
@@ -43,7 +43,7 @@ class Article:
         """Get source domain."""
         return self.url.domain
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "id": self.id,
@@ -58,7 +58,7 @@ class Article:
         }
 
     @classmethod
-    def from_rss_entry(cls, entry: dict, source_id: int) -> Article:
+    def from_rss_entry(cls, entry: dict[str, Any], source_id: int) -> Article:
         """Create Article from feedparser entry."""
         from dateutil import parser as date_parser
 

@@ -39,7 +39,7 @@ class Channel:
                 raise ValueError(
                     f"Missing required config key for {self.type}: {key}")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,

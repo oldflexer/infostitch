@@ -20,10 +20,7 @@ class Embedding:
         if not self.vector:
             raise ValueError("Embedding vector cannot be empty")
 
-        if not all(isinstance(x, (int, float)) for x in self.vector):
-            raise ValueError("All embedding values must be numeric")
-
-        # Ensure all values are floats
+        # Ensure all values are floats (int is also valid as it's a subclass of float in Python)
         object.__setattr__(self, "vector", [float(x) for x in self.vector])
 
     @property

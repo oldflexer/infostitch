@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Dict, Optional
 
 
 @dataclass(slots=True)
@@ -30,7 +30,7 @@ class User:
         if self.role not in ("admin", "viewer"):
             raise ValueError(f"Invalid role: {self.role}")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary (excludes password hash)."""
         return {
             "id": self.id,

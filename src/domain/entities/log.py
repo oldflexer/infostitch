@@ -30,7 +30,7 @@ class Log:
         if not self.message:
             raise ValueError("Log message cannot be empty")
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "id": self.id,

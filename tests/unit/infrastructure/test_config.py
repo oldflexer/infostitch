@@ -21,7 +21,7 @@ class TestSettings:
     def test_default_values(self):
         """Test default values are set correctly."""
         with patch.dict(os.environ, {}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
 
             assert settings.app_env == "development"
             assert settings.log_level == "INFO"
@@ -140,17 +140,17 @@ class TestSettings:
     def test_get_gemini_api_keys(self):
         """Test get_gemini_api_keys method."""
         with patch.dict(os.environ, {"GEMINI_API_KEY": "key1", "GEMINI_API_KEY_2": "key2"}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             keys = settings.get_gemini_api_keys()
             assert keys == ["key1", "key2"]
 
         with patch.dict(os.environ, {"GEMINI_API_KEY": "key1"}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             keys = settings.get_gemini_api_keys()
             assert keys == ["key1"]
 
         with patch.dict(os.environ, {}, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             keys = settings.get_gemini_api_keys()
             assert keys == []
 
@@ -187,7 +187,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "GEMINI_API_KEY" in missing
 
@@ -205,7 +205,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "JINA_API_KEY" in missing
 
@@ -222,7 +222,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "TELEGRAM_BOT_TOKEN" in missing
             assert "TELEGRAM_CHAT_ID" in missing
@@ -240,7 +240,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "VK_ACCESS_TOKEN" in missing
             assert "VK_GROUP_ID" in missing
@@ -258,7 +258,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "MAX_BOT_TOKEN" in missing
             assert "MAX_CHAT_ID" in missing
@@ -272,7 +272,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "AT_LEAST_ONE_PUBLISHER" in missing
 
@@ -291,7 +291,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "admin123",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "ADMIN_PASSWORD (default detected)" in missing
 
@@ -310,7 +310,7 @@ class TestSettings:
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
+            settings = Settings(_env_file=None)
             missing = settings.validate_required_secrets()
             assert "GEMINI_API_KEY" in missing
             assert "JINA_API_KEY" in missing

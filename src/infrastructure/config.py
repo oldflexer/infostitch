@@ -5,8 +5,9 @@ Uses Pydantic Settings for validation and type coercion.
 """
 from __future__ import annotations
 
+import json
 from functools import lru_cache
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -99,7 +100,7 @@ class Settings(BaseSettings):
 
     def get_channel_configs(self) -> Dict[str, Dict[str, Any]]:
         """Get channel configurations from environment."""
-        configs = {}
+        configs: Dict[str, Dict[str, Any]] = {}
 
         if self.telegram_bot_token and self.telegram_chat_id:
             configs["telegram"] = {
@@ -128,7 +129,7 @@ class Settings(BaseSettings):
         Returns:
             List of missing secret names (empty if all present)
         """
-        missing = []
+        missing: List[str] = []
 
         if self.is_production:
             # Required for production
@@ -194,8 +195,6 @@ class DatabaseSettings:
 
         # Try to parse as JSON first (for arrays, objects)
         try:
-            import json
-
             return json.loads(value)
         except (json.JSONDecodeError, TypeError):
             pass
@@ -230,7 +229,7 @@ class DatabaseSettings:
             return val
         return str(val).lower() == "true"
 
-    def get_list(self, key: str, default: List = None) -> List:
+    def get_list(self, key: str, default: List[Any] = None) -> List[Any]:
         val = self.get(key, default or [])
         if isinstance(val, list):
             return val
