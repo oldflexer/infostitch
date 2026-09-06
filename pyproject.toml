@@ -130,3 +130,12 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
+
+[tool.pyright]
+reportMissingTypeStubs = false
+reportUnknownParameterType = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnusedImport = "warning"
+reportUnusedVariable = "warning"
