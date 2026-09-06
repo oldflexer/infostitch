@@ -3,12 +3,10 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.entities.article import Article
 from domain.repositories.article_repo import ArticleRepository
-from infrastructure.db.sqlalchemy_models import RssSource as RssSourceModel
 
 
 class SqlAlchemyArticleRepository(ArticleRepository):

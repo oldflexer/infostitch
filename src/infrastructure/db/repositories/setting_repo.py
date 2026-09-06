@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from sqlalchemy import select, delete, insert
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
@@ -96,7 +96,7 @@ class SqlAlchemySettingRepository(SettingRepository):
         return value
 
     async def initialize_defaults(
-            self, defaults: Dict[str, str] = None) -> None:
+            self, defaults: Optional[Dict[str, str]] = None) -> None:
         """Initialize default settings if not present."""
         settings_to_set = defaults or DEFAULT_SETTINGS
         for key, value in settings_to_set.items():

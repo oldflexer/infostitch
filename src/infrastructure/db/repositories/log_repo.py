@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import select, func, desc, and_, or_
+from sqlalchemy import select, func, desc, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.entities.log import Log
@@ -134,7 +134,7 @@ class SqlAlchemyLogRepository(LogRepository):
         stmt = select(LogModel).order_by(desc(LogModel.timestamp))
 
         if filters:
-            conditions = []
+            conditions: List[Any] = []
             if filters.level:
                 conditions.append(LogModel.level == filters.level)
             if filters.module:
@@ -166,7 +166,7 @@ class SqlAlchemyLogRepository(LogRepository):
         stmt = select(func.count(LogModel.id))
 
         if filters:
-            conditions = []
+            conditions: List[Any] = []
             if filters.level:
                 conditions.append(LogModel.level == filters.level)
             if filters.module:
@@ -195,7 +195,7 @@ class SqlAlchemyLogRepository(LogRepository):
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
     ) -> Dict[str, Any]:
-        conditions = []
+        conditions: List[Any] = []
         if start_time:
             conditions.append(LogModel.timestamp >= start_time)
         if end_time:
