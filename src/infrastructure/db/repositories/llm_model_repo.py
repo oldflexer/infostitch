@@ -92,7 +92,7 @@ class SqlAlchemyLLMModelRepository(LLMModelRepository):
         from sqlalchemy import delete
         stmt = delete(LLMModelModel).where(LLMModelModel.id == model_id)
         result = await self._session.execute(stmt)
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def count(self) -> int:
         stmt = select(func.count(LLMModelModel.id))

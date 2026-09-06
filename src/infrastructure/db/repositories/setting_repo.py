@@ -55,7 +55,7 @@ class SqlAlchemySettingRepository(SettingRepository):
     async def delete(self, key: str) -> bool:
         stmt = delete(SettingModel).where(SettingModel.key == key)
         result = await self._session.execute(stmt)
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def exists(self, key: str) -> bool:
         stmt = select(SettingModel.key).where(SettingModel.key == key)

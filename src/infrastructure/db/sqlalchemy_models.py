@@ -145,9 +145,9 @@ class PublishedPost(Base):
         String(500), unique=True, nullable=False)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     summary: Mapped[str] = mapped_column(Text, nullable=False)
-    embedding: Mapped[List[float]] = mapped_column(
+    embedding: Mapped[Optional[List[float]]] = mapped_column(
         VECTOR(768).with_variant(VECTOR(768), "postgresql"),
-        nullable=False,
+        nullable=True,
     )
     is_duplicate: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False)

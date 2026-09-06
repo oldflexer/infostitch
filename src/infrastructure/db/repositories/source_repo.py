@@ -80,7 +80,7 @@ class SqlAlchemySourceRepository(SourceRepository):
         from sqlalchemy import delete
         stmt = delete(RssSourceModel).where(RssSourceModel.id == source_id)
         result = await self._session.execute(stmt)
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def update_last_fetch(self, source_id: int) -> bool:
         from datetime import datetime, timezone
@@ -90,7 +90,7 @@ class SqlAlchemySourceRepository(SourceRepository):
             .values(last_fetch=datetime.now(timezone.utc))
         )
         result = await self._session.execute(stmt)
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def count(self) -> int:
         stmt = select(func.count(RssSourceModel.id))

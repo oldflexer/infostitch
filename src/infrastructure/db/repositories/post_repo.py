@@ -1,7 +1,6 @@
 """SQLAlchemy Post Repository Implementation."""
 from __future__ import annotations
 
-import math
 from typing import List, Optional
 
 from sqlalchemy import select, func, delete, and_
@@ -24,9 +23,9 @@ class SqlAlchemyPostRepository(PostRepository):
         embedding = None
         if model.embedding:
             if isinstance(model.embedding, (bytes, bytearray)):
-                embedding = Embedding.from_bytes(model.embedding)
+                embedding = Embedding.from_bytes(model.embedding)  # type: ignore[arg-type]
             else:
-                embedding = Embedding.from_list(model.embedding)
+                embedding = Embedding.from_list(model.embedding)  # type: ignore[arg-type]
 
         return Post(
             id=model.id,
@@ -172,7 +171,7 @@ class SqlAlchemyPostRepository(PostRepository):
         stmt = delete(PublishedPostModel).where(
             PublishedPostModel.id == post_id)
         result = await self._session.execute(stmt)
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def find_similar(
         self, embedding: Embedding, threshold: float = 0.75, days: int = 5
@@ -245,15 +244,6 @@ class SqlAlchemyPostRepository(PostRepository):
                 return self._to_entity(best_match)
             return None
 
-    async def get_by_clean_url(self, clean_url: str) -> Optional[Post]:
-        """Get post by clean URL (for deduplication)."""
-        stmt = select(PublishedPostModel).where(
-            PublishedPostModel.clean_url == clean_url
-        )
-        result = await self._session.execute(stmt)
-        model = result.scalar_one_or_none()
-        return self._to_entity(model) if model else None
-
     async def exists_by_url(self, clean_url: str) -> bool:
         """Check if post exists by clean URL."""
         stmt = select(PublishedPostModel.id).where(
@@ -285,7 +275,7 @@ class SqlAlchemyPostRepository(PostRepository):
             PublishedPostModel.created_at < cutoff
         )
         result = await self._session.execute(stmt)
-        return result.rowcount
+        return result.rowcount  # type: ignore[attr-defined]
 
     async def get_by_clean_url(self, clean_url: str) -> Optional[Post]:
         """Get post by clean URL (for deduplication)."""

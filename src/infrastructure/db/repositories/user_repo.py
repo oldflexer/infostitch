@@ -89,7 +89,7 @@ class SqlAlchemyUserRepository(UserRepository):
         from sqlalchemy import delete
         stmt = delete(UserModel).where(UserModel.id == user_id)
         result = await self._session.execute(stmt)
-        return result.rowcount > 0
+        return result.rowcount > 0  # type: ignore[attr-defined]
 
     async def verify_password(self, username: str,
                               password: str) -> Optional[User]:
