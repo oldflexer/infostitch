@@ -7,16 +7,17 @@ from __future__ import annotations
 from typing import List, Optional
 
 from infrastructure.clients.gemini_client import GeminiClient, MockGeminiClient
+from infrastructure.clients.protocols import LLMClientProtocol
 from infrastructure.config import get_settings
 
 
 class EmbeddingService:
     """Service for generating text embeddings."""
 
-    def __init__(self, client: Optional[GeminiClient] = None):
+    def __init__(self, client: Optional[LLMClientProtocol] = None):
         self._client = client or self._create_default_client()
 
-    def _create_default_client(self) -> GeminiClient:
+    def _create_default_client(self) -> LLMClientProtocol:
         settings = get_settings()
         if settings.app_env == "development" and not settings.gemini_api_key:
             return MockGeminiClient()

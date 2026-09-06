@@ -51,10 +51,10 @@ class DeduplicationService:
 
         return len(intersection) / len(union)
 
-    def is_duplicate_by_url(self, url: str) -> bool:
+    async def is_duplicate_by_url(self, url: str) -> bool:
         """Check if URL already published (Stage 0)."""
         clean_url = URL.from_string(url).clean_for_dedup()
-        return self._post_repo.exists_by_url(clean_url)
+        return await self._post_repo.exists_by_url(clean_url)
 
     def is_duplicate_by_jaccard(
         self,
@@ -82,7 +82,7 @@ class DeduplicationService:
             threshold=self._embedding_threshold,
             days=self._stage2_window_days,
         )
-        if similar_post:
+        if similar_post and similar_post.embedding:
             return {
                 "post_id": similar_post.id,
                 "title": similar_post.title,

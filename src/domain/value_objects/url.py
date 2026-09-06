@@ -5,6 +5,7 @@ Validates and normalizes URLs for consistent storage and comparison.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import List
 from urllib.parse import urlparse, urlunparse
 
 

@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 from infrastructure.clients.max_client import MaxClient, MockMaxClient
 from infrastructure.clients.telegram_client import TelegramClient, MockTelegramClient
 from infrastructure.clients.vk_client import VKClient, MockVKClient
+from infrastructure.clients.protocols import PublisherClientProtocol, VKClientProtocol
 from infrastructure.config import get_settings
 
 
@@ -26,10 +27,10 @@ class PublisherClient:
 class TelegramPublisher(PublisherClient):
     """Telegram publisher."""
 
-    def __init__(self, client: Optional[TelegramClient] = None):
+    def __init__(self, client: Optional[PublisherClientProtocol] = None):
         self._client = client or self._create_default_client()
 
-    def _create_default_client(self) -> TelegramClient:
+    def _create_default_client(self) -> PublisherClientProtocol:
         settings = get_settings()
         configs = settings.get_channel_configs()
         tg_config = configs.get("telegram", {})
@@ -56,10 +57,10 @@ class TelegramPublisher(PublisherClient):
 class VKPublisher(PublisherClient):
     """VK publisher."""
 
-    def __init__(self, client: Optional[VKClient] = None):
+    def __init__(self, client: Optional[VKClientProtocol] = None):
         self._client = client or self._create_default_client()
 
-    def _create_default_client(self) -> VKClient:
+    def _create_default_client(self) -> VKClientProtocol:
         settings = get_settings()
         configs = settings.get_channel_configs()
         vk_config = configs.get("vk", {})
@@ -87,10 +88,10 @@ class VKPublisher(PublisherClient):
 class MaxPublisher(PublisherClient):
     """Max (Odnoklassniki) publisher."""
 
-    def __init__(self, client: Optional[MaxClient] = None):
+    def __init__(self, client: Optional[PublisherClientProtocol] = None):
         self._client = client or self._create_default_client()
 
-    def _create_default_client(self) -> MaxClient:
+    def _create_default_client(self) -> PublisherClientProtocol:
         settings = get_settings()
         configs = settings.get_channel_configs()
         max_config = configs.get("max", {})
@@ -119,9 +120,9 @@ class PublisherService:
 
     def __init__(
         self,
-        telegram_client: Optional[TelegramClient] = None,
-        vk_client: Optional[VKClient] = None,
-        max_client: Optional[MaxClient] = None,
+        telegram_client: Optional[PublisherClientProtocol] = None,
+        vk_client: Optional[VKClientProtocol] = None,
+        max_client: Optional[PublisherClientProtocol] = None,
     ):
         self._publishers: Dict[str, PublisherClient] = {}
         self._telegram_client = telegram_client

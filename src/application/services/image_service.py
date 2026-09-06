@@ -7,16 +7,17 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from infrastructure.clients.jina_client import JinaClient, MockJinaClient
+from infrastructure.clients.protocols import ContentExtractionClientProtocol
 from infrastructure.config import get_settings
 
 
 class ImageService:
     """Service for extracting and processing images from articles."""
 
-    def __init__(self, client: Optional[JinaClient] = None):
+    def __init__(self, client: Optional[ContentExtractionClientProtocol] = None):
         self._client = client or self._create_default_client()
 
-    def _create_default_client(self) -> JinaClient:
+    def _create_default_client(self) -> ContentExtractionClientProtocol:
         settings = get_settings()
         if settings.app_env == "development" and not settings.jina_api_key:
             return MockJinaClient()

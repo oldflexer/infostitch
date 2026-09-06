@@ -51,6 +51,7 @@ class GeneratePostStep(PipelineStep):
                         if not template:
                             template = get_template("news_brief")
                             template_id = "news_brief"
+                        assert template is not None, "Template should not be None"
 
                         # Prepare article data
                         article_data = {

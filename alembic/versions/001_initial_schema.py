@@ -7,6 +7,7 @@ Create Date: 2026-08-29
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from pgvector.sqlalchemy import Vector as VECTOR
 
 revision = '001'
 down_revision = None
@@ -65,7 +66,7 @@ def upgrade() -> None:
         sa.Column('clean_url', sa.String(500), nullable=False),
         sa.Column('title', sa.String(500), nullable=False),
         sa.Column('summary', sa.Text(), nullable=False),
-        sa.Column('embedding', postgresql.VECTOR(768), nullable=False),
+        sa.Column('embedding', VECTOR(768), nullable=False),
         sa.Column('is_duplicate', sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column('source_id', sa.BigInteger(), nullable=True),
         sa.Column('channel_id', sa.BigInteger(), nullable=True),

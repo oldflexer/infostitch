@@ -4,7 +4,7 @@ Provides async interface to VK API for uploading photos and posting to wall.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter
@@ -87,7 +87,7 @@ class VKClient:
         server: int,
         photo: str,
         hash: str,
-    ) -> Dict[str, Any]:
+    ) -> List[Dict[str, Any]]:
         """Save uploaded photo to wall."""
         return await self._call(
             "photos.saveWallPhoto",
@@ -145,6 +145,8 @@ class VKClient:
             # Get upload server
             upload_server = await self.get_wall_upload_server()
             upload_url = upload_server.get("upload_url")
+            if not upload_url:
+                raise RuntimeError("Failed to get upload URL from VK")
 
             # Upload photo
             upload_result = await self.upload_photo(upload_url, temp_path)
@@ -157,6 +159,8 @@ class VKClient:
             )
 
             # Create attachment string
+            if not saved or not isinstance(saved, list) or len(saved) == 0:
+                raise RuntimeError("Failed to save wall photo")
             photo_info = saved[0]
             attachment = f"photo{photo_info['owner_id']}_{photo_info['id']}"
 
@@ -195,7 +199,7 @@ class MockVKClient:
         server: int,
         photo: str,
         hash: str,
-    ) -> Dict[str, Any]:
+    ) -> List[Dict[str, Any]]:
         return [{"owner_id": -12345, "id": 67890}]
 
     async def wall_post(

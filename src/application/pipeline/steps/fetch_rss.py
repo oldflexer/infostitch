@@ -59,7 +59,7 @@ class FetchRSSStep(PipelineStep):
         articles = []
         for entry in feed.entries:
             try:
-                article = Article.from_rss_entry(entry, source.id)
+                article = Article.from_rss_entry(entry, source.id or 0)
                 articles.append(article)
             except Exception:
                 # Skip malformed entries

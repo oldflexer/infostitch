@@ -166,7 +166,7 @@ class HealthChecker:
                     latency_ms=0,
                 )
             else:
-                checks[check.name] = check
+                checks[type(check).__name__] = check
 
         # Determine overall status
         statuses = [c.status for c in checks.values()]

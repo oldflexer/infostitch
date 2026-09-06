@@ -229,7 +229,7 @@ class DatabaseSettings:
             return val
         return str(val).lower() == "true"
 
-    def get_list(self, key: str, default: List[Any] = None) -> List[Any]:
+    def get_list(self, key: str, default: Optional[List[Any]] = None) -> List[Any]:
         val = self.get(key, default or [])
         if isinstance(val, list):
             return val

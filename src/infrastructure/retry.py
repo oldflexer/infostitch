@@ -45,7 +45,7 @@ class CircuitBreaker:
         import time
 
         if self.state == "open":
-            if time.time() - self.last_failure_time > self.recovery_timeout:
+            if self.last_failure_time is not None and time.time() - self.last_failure_time > self.recovery_timeout:
                 self.state = "half-open"
                 logger.info("Circuit breaker entering half-open state")
             else:
@@ -65,7 +65,7 @@ class CircuitBreaker:
         import time
 
         if self.state == "open":
-            if time.time() - self.last_failure_time > self.recovery_timeout:
+            if self.last_failure_time is not None and time.time() - self.last_failure_time > self.recovery_timeout:
                 self.state = "half-open"
                 logger.info("Circuit breaker entering half-open state")
             else:
@@ -122,7 +122,7 @@ def get_retry_policy(
             jitter=jitter,
         ),
         retry=retry_if_exception_type(retry_exceptions),
-        before_sleep=before_sleep_log(logger, "WARNING"),
+        before_sleep=before_sleep_log(logger, 30),
         reraise=True,
     )
 
@@ -203,7 +203,7 @@ def retry_sync(
             jitter=jitter,
         ),
         retry=retry_if_exception_type(retry_exceptions),
-        before_sleep=before_sleep_log(logger, "WARNING"),
+        before_sleep=before_sleep_log(logger, 30),
         reraise=True,
     )
     return retry_policy(func, *args, **kwargs)
@@ -214,7 +214,7 @@ def retry_sync(
         import time
 
         if self.state == "open":
-            if time.time() - self.last_failure_time > self.recovery_timeout:
+            if self.last_failure_time is not None and time.time() - self.last_failure_time > self.recovery_timeout:
                 self.state = "half-open"
                 logger.info("Circuit breaker entering half-open state")
             else:
