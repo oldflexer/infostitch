@@ -4,11 +4,11 @@ Provides admin UI for monitoring and configuring the InfoStitch pipeline.
 """
 from __future__ import annotations
 
-import streamlit as st
 import asyncio
-from typing import Optional
+from typing import Any, Optional
 
-from infrastructure.config import get_settings
+import streamlit as st
+
 from infrastructure.db.session import get_db_manager, init_db
 from infrastructure.db.repositories.user_repo import SqlAlchemyUserRepository
 from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
@@ -38,7 +38,7 @@ def verify_password(password: str, password_hash: str) -> bool:
                           password_hash.encode('utf-8'))
 
 
-async def authenticate_user(username: str, password: str) -> Optional[dict]:
+async def authenticate_user(username: str, password: str) -> dict[str, Any] | None:
     """Authenticate user credentials."""
     db_manager = get_db_manager()
     async with db_manager.session() as session:
@@ -235,13 +235,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-def init_session_state() -> None:
-    """Initialize session state variables."""
-    if "authenticated" not in st.session_state:
-        st.session_state.authenticated = False
-    if "user" not in st.session_state:
-        st.session_state.user = None
-    if "db_initialized" not in st.session_state:
-        st.session_state.db_initialized = False

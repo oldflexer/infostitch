@@ -13,7 +13,9 @@ from typing import Any, Dict, List, Optional
 try:
     from streamlit_autorefresh import st_autorefresh
 except ImportError:
-    st_autorefresh = None
+    def st_autorefresh(interval: int, key: str) -> None:
+        """Fallback when streamlit_autorefresh is not installed."""
+        pass
 
 try:
     import plotly.express as px
@@ -24,7 +26,7 @@ from infrastructure.db.repositories.log_repo import SqlAlchemyLogRepository, Log
 
 
 async def render_logs(
-    log_repo: Any,
+    log_repo: SqlAlchemyLogRepository,
     db_settings: Dict[str, Any],
 ) -> None:
     """Render the logs page."""

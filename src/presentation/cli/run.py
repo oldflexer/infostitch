@@ -33,8 +33,10 @@ from infrastructure.health import health_check, readiness_check
 
 import argparse
 import asyncio
+import signal
 import sys
 from pathlib import Path
+from types import FrameType
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -62,7 +64,7 @@ async def run_pipeline(dry_run: bool = False) -> int:
 
     shutdown_event = asyncio.Event()
 
-    def signal_handler(signum, frame):
+    def signal_handler(signum: int, frame: FrameType | None) -> None:
         print(f"🛑 Received signal {signum}, initiating graceful shutdown...")
         shutdown_event.set()
 
@@ -113,7 +115,7 @@ async def run_pipeline(dry_run: bool = False) -> int:
             async def run_with_shutdown_check():
                 return await pipeline.run(context)
             pipeline_task = asyncio.create_task(run_with_shutdown_check())
-            done, pending = await asyncio.wait(
+            _, _ = await asyncio.wait(
             [pipeline_task, asyncio.create_task(shutdown_event.wait())],
             return_when=asyncio.FIRST_COMPLETED
             )
@@ -262,37 +264,37 @@ def main() -> int:
     )
 
     # Clear old data
-    clear_parser = subparsers.add_parser("clear", help="Clear old data")
-    clear_parser.add_argument(
+    _clear_parser = subparsers.add_parser("clear", help="Clear old data")
+    _clear_parser.add_argument(
         "--days", type=int, default=90, help="Days to retain (default: 90)"
     )
 
     # Show config
-    config_parser = subparsers.add_parser("config", help="Show configuration")
+    _config_parser = subparsers.add_parser("config", help="Show configuration")
 
     # Init DB
-    init_parser = subparsers.add_parser("init-db", help="Initialize database")
+    _init_parser = subparsers.add_parser("init-db", help="Initialize database")
 
     # Seed DB
-    seed_parser = subparsers.add_parser(
+    _seed_parser = subparsers.add_parser(
         "seed", help="Seed database with defaults")
 
     # Health check
-    health_parser = subparsers.add_parser(
+    _health_parser = subparsers.add_parser(
         "health", help="Run full health check")
 
     # Readiness check
-    readiness_parser = subparsers.add_parser(
+    _readiness_parser = subparsers.add_parser(
         "readiness", help="Run readiness check (database only)")
 
     # Metrics server
-    metrics_parser = subparsers.add_parser(
+    _metrics_parser = subparsers.add_parser(
         "metrics-server", help="Start Prometheus metrics HTTP server")
-    metrics_parser.add_argument(
+    _metrics_parser.add_argument(
         "--port", type=int, default=9090, help="Port to listen on (default: 9090)")
 
     # Validate secrets
-    validate_parser = subparsers.add_parser(
+    _validate_parser = subparsers.add_parser(
         "validate-secrets", help="Validate required secrets for production")
 
     args = parser.parse_args()
@@ -368,7 +370,7 @@ async def metrics_server(port: int = 9090) -> int:
     # Keep running until interrupted
     stop_event = asyncio.Event()
 
-    def signal_handler(signum, frame):
+    def signal_handler(signum: int, frame: FrameType | None) -> None:
         print("\n🛑 Shutting down metrics server...")
         stop_event.set()
 

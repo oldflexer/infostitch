@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import streamlit as st
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository

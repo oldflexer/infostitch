@@ -4,9 +4,9 @@ Provides CRUD interface for RSS sources, channels, LLM models, and thresholds.
 """
 from __future__ import annotations
 
-import streamlit as st
 import json
-from typing import Any, Dict, List, Optional
+import streamlit as st
+from typing import Any, Dict, List
 
 from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
@@ -15,10 +15,10 @@ from infrastructure.db.repositories.setting_repo import SqlAlchemySettingReposit
 
 
 async def render_settings(
-    source_repo: Any,
-    channel_repo: Any,
-    llm_model_repo: Any,
-    setting_repo: Any,
+    source_repo: SqlAlchemySourceRepository,
+    channel_repo: SqlAlchemyChannelRepository,
+    llm_model_repo: SqlAlchemyLLMModelRepository,
+    setting_repo: SqlAlchemySettingRepository,
     db_settings: Dict[str, Any],
 ) -> None:
     """Render the settings page."""
@@ -265,12 +265,12 @@ async def _render_llm_models_tab(llm_model_repo: Any) -> None:
 
 
 async def _render_thresholds_tab(
-        setting_repo: Any, db_settings: Dict[str, Any]) -> None:
+        setting_repo: SqlAlchemySettingRepository, db_settings: Dict[str, Any]) -> None:
     """Render thresholds configuration tab."""
     st.subheader("🎯 Thresholds & Limits")
 
     # Editable thresholds
-    thresholds = {
+    thresholds: Dict[str, tuple[str, str, float, float]] = {
         "jaccard_threshold": ("Jaccard Similarity Threshold", "float", 0.0, 1.0),
         "embedding_similarity_threshold": ("Embedding Similarity Threshold", "float", 0.0, 1.0),
         "post_length_min": ("Min Post Length", "int", 100, 2000),
@@ -311,7 +311,7 @@ async def _render_thresholds_tab(
 
 
 async def _render_templates_tab(
-        setting_repo: Any, db_settings: Dict[str, Any]) -> None:
+        setting_repo: SqlAlchemySettingRepository, db_settings: Dict[str, Any]) -> None:
     """Render templates configuration tab."""
     st.subheader("📝 Templates")
 

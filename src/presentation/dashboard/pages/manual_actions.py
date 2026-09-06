@@ -7,7 +7,7 @@ from __future__ import annotations
 import streamlit as st
 import asyncio
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
 from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
@@ -18,6 +18,7 @@ from application.services.llm_service import LLMService
 from application.services.embedding_service import EmbeddingService
 from application.services.image_service import ImageService
 from application.services.deduplication_service import DeduplicationService
+from application.services.notification_service import NotificationService
 from application.pipeline.pipeline import Pipeline
 from application.pipeline.steps.fetch_rss import FetchRSSStep
 from application.pipeline.steps.deduplicate import DeduplicateStep
@@ -28,24 +29,13 @@ from application.pipeline.steps.compute_embedding import ComputeEmbeddingStep
 from application.pipeline.steps.check_embedding_duplicate import CheckEmbeddingDuplicateStep
 from application.pipeline.steps.publish import PublishStep
 from application.dto.pipeline_context import PipelineContext
-from application.services.publisher_service import PublisherService
-from application.services.notification_service import NotificationService
 from infrastructure.db.session import get_db_manager
-from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
-from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
-from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
-from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
-from application.services.llm_service import LLMService
-from application.services.embedding_service import EmbeddingService
-from application.services.image_service import ImageService
-from application.services.deduplication_service import DeduplicationService
-from application.services.publisher_service import PublisherService
 
 
 async def render_manual_actions(
-    source_repo: Any,
-    post_repo: Any,
-    setting_repo: Any,
+    source_repo: SqlAlchemySourceRepository,
+    post_repo: SqlAlchemyPostRepository,
+    setting_repo: SqlAlchemySettingRepository,
     db_settings: Dict[str, Any],
 ) -> None:
     """Render the manual actions page."""

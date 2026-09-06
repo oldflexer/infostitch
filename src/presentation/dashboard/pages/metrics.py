@@ -6,18 +6,26 @@ from __future__ import annotations
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
+
+try:
+    import plotly.express as px
+except ImportError:
+    px = None
+
+try:
+    import plotly.graph_objects as go
+except ImportError:
+    go = None
 
 from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
 from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
 
 
 async def render_metrics(
-    post_repo: Any,
-    setting_repo: Any,
+    post_repo: SqlAlchemyPostRepository,
+    setting_repo: SqlAlchemySettingRepository,
     db_settings: Dict[str, Any],
 ) -> None:
     """Render the metrics page."""
@@ -48,8 +56,10 @@ async def render_metrics(
         if st.button("🔄 Refresh", use_container_width=True):
             st.rerun()
 
-    # Load data
-    posts = await _load_posts_data(post_repo, start_date, end_date)
+    # Load data - convert date to datetime
+    start_dt = datetime.combine(start_date, datetime.min.time())
+    end_dt = datetime.combine(end_date, datetime.max.time())
+    posts = await _load_posts_data(post_repo, start_dt, end_dt)
 
     if not posts:
         st.info("No data available for the selected period")
@@ -75,7 +85,7 @@ async def render_metrics(
 
 
 async def _load_posts_data(
-    post_repo: Any,
+    post_repo: SqlAlchemyPostRepository,
     start_date: datetime,
     end_date: datetime,
 ) -> List[Dict[str, Any]]:
