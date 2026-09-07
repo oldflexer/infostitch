@@ -1,4 +1,8 @@
-"""Integration tests for ComputeEmbeddingStep."""
+with open('tests/integration/pipeline/test_compute_embedding.py', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# Completely rewrite the file with correct structure
+new_content = '''"""Integration tests for ComputeEmbeddingStep."""
 from __future__ import annotations
 
 import pytest
@@ -134,3 +138,9 @@ class TestComputeEmbeddingStep:
         # Both should be zero vectors
         for emb in result.post_embeddings:
             assert all(v == 0.0 for v in emb.vector)
+'''
+
+with open('tests/integration/pipeline/test_compute_embedding.py', 'w', encoding='utf-8') as f:
+    f.write(new_content)
+
+print('Fixed test_compute_embedding.py')

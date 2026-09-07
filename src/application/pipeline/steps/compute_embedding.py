@@ -39,7 +39,7 @@ class ComputeEmbeddingStep(PipelineStep):
                         text = f"{post['title']}. {post['summary']}"
 
                         embedding = await self._embedding_service.generate_embedding(text)
-                        embeddings.append(Embedding.from_list(embedding))
+                        embeddings.append(embedding)
                         logger.info("Embedding computed", article_id=article_id)
                     except Exception as e:
                         logger.error("Embedding generation failed", article_id=article_id, error=str(e))
