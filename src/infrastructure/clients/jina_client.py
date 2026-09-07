@@ -121,7 +121,7 @@ class JinaClient:
         data = response.json()
         return data.get("data", {})
 
-    def extract_image_url(self, data: Dict[str, Any]) -> Optional[str]:
+    async def extract_image_url(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract best image URL from Jina response.
 
         Priority: featured image > first image in content > None
@@ -144,7 +144,7 @@ class JinaClient:
 
         return None
 
-    def clean_content(self, content: str, max_length: int = 6000) -> str:
+    async def clean_content(self, content: str, max_length: int = 6000) -> str:
         """Clean extracted content.
 
         Removes links, images, extra newlines, truncates to max_length.
@@ -198,8 +198,8 @@ class MockJinaClient:
     ) -> Dict[str, Any]:
         return await self.extract_content(url)
 
-    def extract_image_url(self, data: Dict[str, Any]) -> Optional[str]:
+    async def extract_image_url(self, data: Dict[str, Any]) -> Optional[str]:
         return data.get("image")
 
-    def clean_content(self, content: str, max_length: int = 6000) -> str:
+    async def clean_content(self, content: str, max_length: int = 6000) -> str:
         return content[:max_length]

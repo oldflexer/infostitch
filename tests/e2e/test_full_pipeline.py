@@ -62,33 +62,9 @@ class TestFullPipelineE2E:
     @pytest.fixture
     def mock_jina_client(self):
         """Mock Jina client for content extraction."""
-        with patch("infrastructure.clients.jina_client.JinaClient") as mock_class:
-            mock_client = MagicMock()
-            mock_client.extract_content = AsyncMock(
-                side_effect=[
-                    {
-                        "title": "AI Breakthrough in Machine Learning",
-                        "description": "Full content about AI breakthrough...",
-                        "content": "Full article content about AI breakthrough...",
-                        "image_url": "https://example.com/image1.jpg",
-                        "url": "https://example.com/article1",
-                    },
-                    {
-                        "title": "New Python Release 3.13",
-                        "description": "Full content about Python release...",
-                        "content": "Full article content about Python release...",
-                        "image_url": None,
-                        "url": "https://example.com/article2",
-                    },
-                    {
-                        "title": "Quantum Computing Advances",
-                        "description": "Full content about quantum computing...",
-                        "content": "Full article content about quantum computing...",
-                        "image_url": "https://example.com/image3.jpg",
-                        "url": "https://example.com/article3",
-                    },
-                ])
-            mock_class.return_value = mock_client
+        from infrastructure.clients.jina_client import MockJinaClient
+        with patch("infrastructure.clients.jina_client.JinaClient", MockJinaClient):
+            mock_client = MockJinaClient()
             yield mock_client
 
     @pytest.fixture

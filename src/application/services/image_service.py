@@ -38,11 +38,11 @@ class ImageService:
         data = await self._client.extract_content(url)
 
         # Extract image
-        image_url = self._client.extract_image_url(data)
+        image_url = await self._client.extract_image_url(data)
 
         # Clean content
         content = data.get("content", "")
-        cleaned_content = self._client.clean_content(content)
+        cleaned_content = await self._client.clean_content(content)
 
         return {
             "title": data.get("title", ""),

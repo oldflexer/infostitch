@@ -119,35 +119,35 @@ class TestJinaClient:
     async def test_extract_image_url_from_featured(self, jina_client):
         """Test extracting image URL from featured image."""
         data = {"image": "https://example.com/featured.jpg"}
-        result = jina_client.extract_image_url(data)
+        result = await jina_client.extract_image_url(data)
         assert result == "https://example.com/featured.jpg"
 
     @pytest.mark.asyncio
     async def test_extract_image_url_from_images_list(self, jina_client):
         """Test extracting image URL from images list."""
         data = {"images": [{"url": "https://example.com/img1.jpg"}, {"url": "https://example.com/img2.jpg"}]}
-        result = jina_client.extract_image_url(data)
+        result = await jina_client.extract_image_url(data)
         assert result == "https://example.com/img1.jpg"
 
     @pytest.mark.asyncio
     async def test_extract_image_url_from_markdown(self, jina_client):
         """Test extracting image URL from markdown content."""
         data = {"content": "Text ![Alt](https://example.com/markdown.jpg) more text"}
-        result = jina_client.extract_image_url(data)
+        result = await jina_client.extract_image_url(data)
         assert result == "https://example.com/markdown.jpg"
 
     @pytest.mark.asyncio
     async def test_extract_image_url_none(self, jina_client):
         """Test extracting image URL when none exists."""
         data = {"content": "No images here"}
-        result = jina_client.extract_image_url(data)
+        result = await jina_client.extract_image_url(data)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_clean_content_removes_links(self, jina_client):
         """Test cleaning content removes markdown links."""
         content = "Check [this link](https://example.com) out"
-        result = jina_client.clean_content(content)
+        result = await jina_client.clean_content(content)
         assert result == "Check this link out"
 
     @pytest.mark.asyncio
@@ -156,28 +156,28 @@ class TestJinaClient:
         # Note: Current implementation processes links before images,
         # so ![Alt](url) becomes !Alt (link regex matches [Alt](url) part)
         content = "Image: ![Alt](https://example.com/img.jpg)"
-        result = jina_client.clean_content(content)
+        result = await jina_client.clean_content(content)
         assert result == "Image: !Alt"
 
     @pytest.mark.asyncio
     async def test_clean_content_removes_html(self, jina_client):
         """Test cleaning content removes HTML tags."""
         content = "<p>Paragraph</p><div>Div</div>"
-        result = jina_client.clean_content(content)
+        result = await jina_client.clean_content(content)
         assert result == "ParagraphDiv"
 
     @pytest.mark.asyncio
     async def test_clean_content_normalizes_whitespace(self, jina_client):
         """Test cleaning content normalizes whitespace."""
         content = "Line 1\n\n\nLine 2\n\n\n\nLine 3"
-        result = jina_client.clean_content(content)
+        result = await jina_client.clean_content(content)
         assert result == "Line 1\n\nLine 2\n\nLine 3"
 
     @pytest.mark.asyncio
     async def test_clean_content_truncates(self, jina_client):
         """Test cleaning content truncates to max_length."""
         content = "A" * 7000
-        result = jina_client.clean_content(content, max_length=100)
+        result = await jina_client.clean_content(content, max_length=100)
         assert len(result) <= 103  # 100 + '...'
         assert result.endswith("...")
 
@@ -219,14 +219,14 @@ class TestMockJinaClient:
     async def test_extract_image_url(self, mock_client):
         """Test mock extract image URL."""
         data = {"image": "https://example.com/mock.jpg"}
-        result = mock_client.extract_image_url(data)
+        result = await mock_client.extract_image_url(data)
         assert result == "https://example.com/mock.jpg"
 
     @pytest.mark.asyncio
     async def test_clean_content(self, mock_client):
         """Test mock clean content truncates."""
         content = "A" * 1000
-        result = mock_client.clean_content(content, max_length=100)
+        result = await mock_client.clean_content(content, max_length=100)
         assert len(result) == 100
 
     @pytest.mark.asyncio
