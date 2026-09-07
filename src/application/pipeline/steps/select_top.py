@@ -4,15 +4,12 @@ Uses LLM to rank and select top articles.
 """
 from __future__ import annotations
 
-from typing import List
-
 import structlog
 from infrastructure.logging.logger import LoggingContext
 
 from application.dto.pipeline_context import PipelineContext
 from application.pipeline.step import PipelineStep
 from application.services.llm_service import LLMService
-from domain.entities.article import Article
 
 logger = structlog.get_logger(__name__)
 
@@ -42,7 +39,6 @@ class SelectTopStep(PipelineStep):
             try:
                 # Prepare articles for LLM
                 articles_for_llm = context.get_articles_for_selection()
-                recent_titles = context.get_recent_titles(limit=10)
 
                 # Get LLM ranking
                 logger.info("Requesting LLM ranking", candidates=len(articles_for_llm))

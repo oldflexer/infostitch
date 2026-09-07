@@ -33,7 +33,6 @@ from infrastructure.health import health_check, readiness_check
 
 import argparse
 import asyncio
-import signal
 import sys
 from pathlib import Path
 from types import FrameType

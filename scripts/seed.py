@@ -89,7 +89,7 @@ async def seed_channels(session: AsyncSession) -> None:
 async def seed_llm_models(session: AsyncSession) -> None:
     """Seed default LLM models."""
     repo = SqlAlchemyLLMModelRepository(session)
-    settings = get_settings()
+    _ = get_settings()
 
     models = [
         LLMModel(

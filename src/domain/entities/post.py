@@ -6,11 +6,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from domain.value_objects.embedding import Embedding
-from domain.value_objects.template import Template
-from domain.value_objects.url import URL
 
 
 @dataclass(slots=True)

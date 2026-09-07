@@ -5,7 +5,7 @@ Runs pipeline steps in order with error handling, logging, and metrics.
 from __future__ import annotations
 
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import structlog
 
@@ -16,7 +16,6 @@ from application.services.notification_service import NotificationService
 from infrastructure.logging.metrics import (
     MetricsContext,
     increment_counter,
-    observe_histogram,
     pipeline_duration_seconds,
     pipeline_runs_total,
     pipeline_step_duration_seconds,

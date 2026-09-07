@@ -5,7 +5,7 @@ Provides admin UI for monitoring and configuring the InfoStitch pipeline.
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Optional
+from typing import Any
 
 import streamlit as st
 

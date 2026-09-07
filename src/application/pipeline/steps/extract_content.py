@@ -4,15 +4,12 @@ Extracts full article content and images using Jina AI.
 """
 from __future__ import annotations
 
-from typing import List
-
 import structlog
 from infrastructure.logging.logger import LoggingContext
 
 from application.dto.pipeline_context import PipelineContext
 from application.pipeline.step import PipelineStep
 from application.services.image_service import ImageService
-from domain.entities.article import Article
 
 logger = structlog.get_logger(__name__)
 

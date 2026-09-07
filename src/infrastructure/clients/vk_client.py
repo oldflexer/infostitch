@@ -64,11 +64,11 @@ class VKClient:
 
         return data.get("response", {})
 
-    async def get_wall_upload_server(self) -> Dict[str, Any]:
+    async def get_wall_upload_server(self, group_id: str) -> Dict[str, Any]:
         """Get upload server URL for wall photos."""
         return await self._call(
             "photos.getWallUploadServer",
-            group_id=self._group_id,
+            group_id=group_id,
         )
 
     async def upload_photo(self, upload_url: str,
@@ -83,6 +83,7 @@ class VKClient:
 
     async def save_wall_photo(
         self,
+        group_id: str,
         server: int,
         photo: str,
         hash: str,
@@ -90,7 +91,7 @@ class VKClient:
         """Save uploaded photo to wall."""
         result = await self._call(
             "photos.saveWallPhoto",
-            group_id=self._group_id,
+            group_id=group_id,
             server=server,
             photo=photo,
             hash=hash,
@@ -146,7 +147,7 @@ class VKClient:
 
         try:
             # Get upload server
-            upload_server = await self.get_wall_upload_server()
+            upload_server = await self.get_wall_upload_server(self._group_id)
             upload_url = upload_server.get("upload_url")
             if not upload_url:
                 raise RuntimeError("Failed to get upload URL from VK")
@@ -156,6 +157,7 @@ class VKClient:
 
             # Save photo
             saved = await self.save_wall_photo(
+                group_id=self._group_id,
                 server=upload_result["server"],
                 photo=upload_result["photo"],
                 hash=upload_result["hash"],
@@ -189,7 +191,7 @@ class MockVKClient:
     async def close(self) -> None:
         pass
 
-    async def get_wall_upload_server(self) -> Dict[str, Any]:
+    async def get_wall_upload_server(self, group_id: str) -> Dict[str, Any]:
         return {"upload_url": "https://mock.vk.com/upload"}
 
     async def upload_photo(self, upload_url: str,
@@ -199,6 +201,7 @@ class MockVKClient:
 
     async def save_wall_photo(
         self,
+        group_id: str,
         server: int,
         photo: str,
         hash: str,

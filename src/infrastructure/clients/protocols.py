@@ -121,7 +121,7 @@ class PublisherClientProtocol(Protocol):
 class VKClientProtocol(Protocol):
     """Protocol for VK-specific features."""
 
-    async def get_wall_upload_server(self, group_id: str) -> str:
+    async def get_wall_upload_server(self, group_id: str) -> Dict[str, Any]:
         """Get upload server URL for wall photos."""
         ...
 
@@ -132,8 +132,8 @@ class VKClientProtocol(Protocol):
     async def save_wall_photo(
         self,
         group_id: str,
-        photo: str,
         server: int,
+        photo: str,
         hash: str,
     ) -> List[Dict[str, Any]]:
         """Save wall photo."""
@@ -141,9 +141,9 @@ class VKClientProtocol(Protocol):
 
     async def wall_post(
         self,
-        owner_id: str,
         message: str,
         attachments: Optional[str] = None,
+        from_group: bool = True,
     ) -> Dict[str, Any]:
         """Post to wall."""
         ...

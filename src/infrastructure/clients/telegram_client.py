@@ -87,7 +87,7 @@ class TelegramClient:
     async def send_photo(
         self,
         photo_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         """Send photo with caption to chat.
@@ -105,9 +105,10 @@ class TelegramClient:
         payload = {
             "chat_id": self._chat_id,
             "photo": photo_url,
-            "caption": caption,
             "parse_mode": parse_mode,
         }
+        if caption is not None:
+            payload["caption"] = caption
 
         response = await self.client.post(url, json=payload)
         response.raise_for_status()
@@ -127,7 +128,7 @@ class TelegramClient:
     async def send_document(
         self,
         document_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         """Send document to chat."""
@@ -136,9 +137,10 @@ class TelegramClient:
         payload = {
             "chat_id": self._chat_id,
             "document": document_url,
-            "caption": caption,
             "parse_mode": parse_mode,
         }
+        if caption is not None:
+            payload["caption"] = caption
 
         response = await self.client.post(url, json=payload)
         response.raise_for_status()
@@ -184,7 +186,7 @@ class MockTelegramClient:
     async def send_photo(
         self,
         photo_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         self.sent_photos.append({
@@ -196,7 +198,7 @@ class MockTelegramClient:
     async def send_document(
         self,
         document_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         return {"message_id": 1, "ok": True}

@@ -57,7 +57,7 @@ class CircuitBreaker:
             raise
 
     async def acall(
-            self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
+            self, func: Callable[..., Awaitable[T]], *args: Any, **kwargs: Any) -> T:
         """Execute async function with circuit breaker."""
         import time
 

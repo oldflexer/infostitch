@@ -8,13 +8,12 @@ import feedparser
 from typing import List
 
 import structlog
-from infrastructure.logging.logger import LoggingContext, get_correlation_id
+from infrastructure.logging.logger import LoggingContext
 
 from application.dto.pipeline_context import PipelineContext
 from application.pipeline.step import PipelineStep
 from domain.entities.article import Article
 from domain.entities.rss_source import RssSource
-from domain.value_objects.url import URL
 
 logger = structlog.get_logger(__name__)
 

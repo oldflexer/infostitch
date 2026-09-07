@@ -231,7 +231,7 @@ class SqlAlchemyPostRepository(PostRepository):
                 if model.embedding:
                     if isinstance(model.embedding, (bytes, bytearray)):
                         stored_embedding = Embedding.from_bytes(
-                            model.embedding)
+                            model.embedding)  # type: ignore[arg-type]
                     else:
                         stored_embedding = Embedding.from_list(model.embedding)
 

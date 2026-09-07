@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 import streamlit as st
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
@@ -41,6 +41,12 @@ async def render_settings(
 
     with tab3:
         await _render_llm_models_tab(llm_model_repo)
+
+    with tab4:
+        await _render_thresholds_tab(setting_repo, db_settings)
+
+    with tab5:
+        await _render_templates_tab(setting_repo, db_settings)
 
 
 async def _render_rss_sources_tab(source_repo: Any) -> None:
@@ -167,8 +173,8 @@ async def _render_channels_tab(channel_repo: Any) -> None:
             # Edit form
             if st.session_state.get(f"edit_channel_{channel.id}", False):
                 with st.form(f"edit_channel_form_{channel.id}"):
-                    new_name = st.text_input("Name", value=channel.name)
-                    new_type = st.selectbox(
+                    _ = st.text_input("Name", value=channel.name)
+                    _ = st.selectbox(
                         "Type", [
                             "telegram", "vk", "max"], index=[
                             "telegram", "vk", "max"].index(
@@ -332,7 +338,7 @@ async def _render_templates_tab(
         )
 
         st.write("**Default Template ID**")
-        default_template = st.text_input(
+        _ = st.text_input(
             "Default Template",
             value=db_settings.get("default_template_id", "news_brief"),
             key="default_template_id",

@@ -4,8 +4,6 @@ Semantic deduplication using embeddings.
 """
 from __future__ import annotations
 
-from typing import List
-
 import structlog
 from infrastructure.logging.logger import LoggingContext
 
@@ -13,7 +11,6 @@ from application.dto.pipeline_context import PipelineContext
 from application.pipeline.step import PipelineStep
 from application.services.deduplication_service import DeduplicationService
 from domain.entities.post import Post
-from domain.value_objects.embedding import Embedding
 
 logger = structlog.get_logger(__name__)
 

@@ -4,7 +4,7 @@ Publishes final posts to all enabled channels.
 """
 from __future__ import annotations
 
-from typing import List
+
 
 import structlog
 from infrastructure.logging.logger import LoggingContext

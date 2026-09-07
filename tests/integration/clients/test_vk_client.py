@@ -36,7 +36,7 @@ class TestVKClient:
         mock_response.raise_for_status = MagicMock()
         mock_httpx_client.post.return_value = mock_response
 
-        result = await vk_client.get_wall_upload_server()
+        result = await vk_client.get_wall_upload_server("12345")
 
         assert result["upload_url"] == "https://vk.com/upload"
         mock_httpx_client.post.assert_called_once()
@@ -57,7 +57,7 @@ class TestVKClient:
         mock_httpx_client.post.return_value = mock_response
 
         with pytest.raises(RuntimeError, match="VK API error: Invalid group_id"):
-            await vk_client.get_wall_upload_server()
+            await vk_client.get_wall_upload_server("12345")
 
     @pytest.mark.asyncio
     async def test_get_wall_upload_server_http_error(self, vk_client, mock_httpx_client):
@@ -69,7 +69,7 @@ class TestVKClient:
         mock_httpx_client.post.return_value = mock_response
 
         with pytest.raises(httpx.HTTPStatusError):
-            await vk_client.get_wall_upload_server()
+            await vk_client.get_wall_upload_server("12345")
 
     @pytest.mark.asyncio
     async def test_upload_photo_success(self, vk_client):
@@ -137,7 +137,7 @@ class TestVKClient:
         mock_response.raise_for_status = MagicMock()
         mock_httpx_client.post.return_value = mock_response
 
-        result = await vk_client.save_wall_photo(server=1, photo="photo_data", hash="hash123")
+        result = await vk_client.save_wall_photo(group_id="12345", server=1, photo="photo_data", hash="hash123")
 
         assert result[0]["owner_id"] == -12345
         assert result[0]["id"] == 67890
@@ -159,7 +159,7 @@ class TestVKClient:
         mock_httpx_client.post.return_value = mock_response
 
         with pytest.raises(RuntimeError, match="VK API error: Invalid hash"):
-            await vk_client.save_wall_photo(server=1, photo="photo_data", hash="bad_hash")
+            await vk_client.save_wall_photo(group_id="12345", server=1, photo="photo_data", hash="bad_hash")
 
     @pytest.mark.asyncio
     async def test_wall_post_success(self, vk_client, mock_httpx_client):
@@ -346,7 +346,7 @@ class TestMockVKClient:
     @pytest.mark.asyncio
     async def test_get_wall_upload_server(self, mock_client):
         """Test mock get wall upload server."""
-        result = await mock_client.get_wall_upload_server()
+        result = await mock_client.get_wall_upload_server("12345")
         assert result["upload_url"] == "https://mock.vk.com/upload"
 
     @pytest.mark.asyncio
@@ -363,7 +363,7 @@ class TestMockVKClient:
     @pytest.mark.asyncio
     async def test_save_wall_photo(self, mock_client):
         """Test mock save wall photo."""
-        result = await mock_client.save_wall_photo(server=1, photo="photo_data", hash="hash123")
+        result = await mock_client.save_wall_photo(group_id="12345", server=1, photo="photo_data", hash="hash123")
 
         assert result[0]["owner_id"] == -12345
         assert result[0]["id"] == 67890

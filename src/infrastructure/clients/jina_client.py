@@ -5,7 +5,7 @@ Provides async interface to Jina AI Reader API for content extraction.
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter

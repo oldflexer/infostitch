@@ -4,15 +4,12 @@ Filters articles by URL and Jaccard similarity.
 """
 from __future__ import annotations
 
-from typing import List
-
 import structlog
 from infrastructure.logging.logger import LoggingContext
 
 from application.dto.pipeline_context import PipelineContext
 from application.pipeline.step import PipelineStep
 from application.services.deduplication_service import DeduplicationService
-from domain.entities.article import Article
 
 logger = structlog.get_logger(__name__)
 

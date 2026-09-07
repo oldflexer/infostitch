@@ -5,7 +5,7 @@ Provides async interface to Google Gemini API for text generation and embeddings
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter
@@ -242,3 +242,8 @@ class MockGeminiClient:
         task_type: str = "RETRIEVAL_DOCUMENT",
     ) -> List[Embedding]:
         return [await self.generate_embedding(t, model, task_type) for t in texts]
+
+    async def count_tokens(self, text: str) -> int:
+        """Count tokens in text (mock implementation)."""
+        # Rough approximation: 1 token ≈ 4 characters
+        return len(text) // 4

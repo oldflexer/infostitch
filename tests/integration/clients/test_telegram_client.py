@@ -127,7 +127,8 @@ class TestTelegramClient:
 
         assert result["message_id"] == 111
         call_args = mock_httpx_client.post.call_args
-        assert call_args[1]["json"]["caption"] == ""
+        # Caption should not be in payload when not provided
+        assert "caption" not in call_args[1]["json"]
 
     @pytest.mark.asyncio
     async def test_send_photo_api_error(self, telegram_client, mock_httpx_client):
@@ -271,7 +272,7 @@ class TestMockTelegramClient:
         result = await mock_client.send_photo("https://example.com/photo.jpg")
 
         assert result["message_id"] == 1
-        assert mock_client.sent_photos[0]["caption"] == ""
+        assert mock_client.sent_photos[0]["caption"] is None
 
     @pytest.mark.asyncio
     async def test_send_document(self, mock_client):

@@ -12,12 +12,14 @@ from typing import Any, Dict, List
 try:
     import plotly.express as px
 except ImportError:
-    px = None
+    px = None  # type: ignore[assignment]
 
-try:
-    import plotly.graph_objects as go
-except ImportError:
-    go = None
+# go is not used but kept for potential future use
+# go is not used but kept for potential future use
+# try:
+#     import plotly.graph_objects as go
+# except ImportError:
+#     go = None  # type: ignore[assignment]
 
 from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
 from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
@@ -83,6 +85,12 @@ async def render_metrics(
     with tab2:
         _render_article_charts(df)
 
+    with tab3:
+        _render_api_charts()
+
+    with tab4:
+        _render_deduplication_charts(df)
+
 
 async def _load_posts_data(
     post_repo: SqlAlchemyPostRepository,
@@ -134,25 +142,26 @@ def _render_pipeline_charts(df: pd.DataFrame) -> None:
 
     # Posts per day
     daily_counts = df.groupby('date').size().reset_index(name='count')
-    fig = px.line(daily_counts, x='date', y='count',
-                  title='Posts Published per Day')
-    fig.update_layout(xaxis_title="Date", yaxis_title="Posts")
-    st.plotly_chart(fig, use_container_width=True)
+    if px is not None:
+        fig = px.line(daily_counts, x='date', y='count',
+                      title='Posts Published per Day')
+        fig.update_layout(xaxis_title="Date", yaxis_title="Posts")
+        st.plotly_chart(fig, use_container_width=True)
 
     col1, col2 = st.columns(2)
 
-    with st.container():
+    with col1:
         # Posts by channel
-        if 'channel_id' in df.columns:
+        if 'channel_id' in df.columns and px is not None:
             channel_counts = df['channel_id'].value_counts().reset_index()
             channel_counts.columns = ['channel_id', 'count']
             fig = px.bar(channel_counts, x='channel_id',
                          y='count', title='Posts by Channel')
             st.plotly_chart(fig, use_container_width=True)
 
-    with st.container():
+    with col2:
         # Posts by template
-        if 'template_id' in df.columns:
+        if 'template_id' in df.columns and px is not None:
             template_counts = df['template_id'].value_counts().reset_index()
             template_counts.columns = ['template_id', 'count']
             fig = px.pie(template_counts, values='count',
@@ -168,7 +177,7 @@ def _render_article_charts(df: pd.DataFrame) -> None:
 
     with col1:
         # Duplicate vs unique
-        if 'is_duplicate' in df.columns:
+        if 'is_duplicate' in df.columns and px is not None:
             dup_counts = df['is_duplicate'].value_counts().reset_index()
             dup_counts.columns = ['is_duplicate', 'count']
             dup_counts['is_duplicate'] = dup_counts['is_duplicate'].map(
@@ -182,7 +191,7 @@ def _render_article_charts(df: pd.DataFrame) -> None:
 
     with col2:
         # Posts by source
-        if 'source_id' in df.columns:
+        if 'source_id' in df.columns and px is not None:
             source_counts = df['source_id'].value_counts().reset_index()
             source_counts.columns = ['source_id', 'count']
             fig = px.bar(source_counts, x='source_id',

@@ -5,7 +5,6 @@ Abstract base class for pipeline steps.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
 
 from application.dto.pipeline_context import PipelineContext
 

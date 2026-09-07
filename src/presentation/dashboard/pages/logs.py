@@ -6,9 +6,8 @@ from __future__ import annotations
 
 import streamlit as st
 import pandas as pd
-import asyncio
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 try:
     from streamlit_autorefresh import st_autorefresh
@@ -20,7 +19,7 @@ except ImportError:
 try:
     import plotly.express as px
 except ImportError:
-    px = None
+    px = None  # type: ignore[assignment]
 
 from infrastructure.db.repositories.log_repo import SqlAlchemyLogRepository, LogFilters, Pagination
 
@@ -105,7 +104,7 @@ def _render_log_filters() -> None:
             key="log_filter_end",
         )
     with col3:
-        page_size = st.selectbox(
+        _ = st.selectbox(
             "Page Size",
             [25, 50, 100, 200],
             index=1,
@@ -269,7 +268,7 @@ async def _render_log_stats(log_repo: Any) -> None:
 
     # By level chart
     by_level = stats.get("by_level", {})
-    if by_level:
+    if by_level and px is not None:
         st.subheader("Logs by Level (24h)")
         level_df = pd.DataFrame(list(by_level.items()),
                                 columns=["Level", "Count"])
@@ -279,7 +278,7 @@ async def _render_log_stats(log_repo: Any) -> None:
 
     # Top modules
     by_module = stats.get("by_module", {})
-    if by_module:
+    if by_module and px is not None:
         st.subheader("Top Modules (24h)")
         module_df = pd.DataFrame(
             list(by_module.items()), columns=["Module", "Count"])
@@ -289,4 +288,4 @@ async def _render_log_stats(log_repo: Any) -> None:
     st.divider()
 
     # Log statistics
-    _render_log_stats(log_repo)
+    await _render_log_stats(log_repo)

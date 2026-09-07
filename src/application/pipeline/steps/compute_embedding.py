@@ -4,7 +4,10 @@ Generates embeddings for generated posts.
 """
 from __future__ import annotations
 
-from typing import List
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from domain.value_objects.embedding import Embedding
 
 import structlog
 from infrastructure.logging.logger import LoggingContext

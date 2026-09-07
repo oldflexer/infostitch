@@ -98,7 +98,7 @@ class MaxClient:
     async def send_photo(
         self,
         photo_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         """Send photo with caption to chat.
@@ -116,9 +116,55 @@ class MaxClient:
         payload = {
             "chat_id": self._chat_id,
             "photo_url": photo_url,
-            "caption": caption,
             "parse_mode": parse_mode,
         }
+        if caption is not None:
+            payload["caption"] = caption
+
+        response = await self.client.post(
+            url,
+            headers=self._get_headers(),
+            json=payload,
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        if not data.get("ok", True):
+            raise RuntimeError(
+                f"Max API error: {data.get('description', 'Unknown error')}")
+
+        return data.get("result", {})
+
+    @retry(
+        wait=wait_exponential_jitter(initial=1, max=10),
+        stop=stop_after_attempt(3),
+        reraise=True,
+    )
+    async def send_document(
+        self,
+        document_url: str,
+        caption: Optional[str] = None,
+        parse_mode: str = "HTML",
+    ) -> Dict[str, Any]:
+        """Send document to chat.
+
+        Args:
+            document_url: Document URL
+            caption: Document caption
+            parse_mode: Parse mode for caption
+
+        Returns:
+            API response
+        """
+        url = f"{self._base_url}/messages"
+
+        payload = {
+            "chat_id": self._chat_id,
+            "document_url": document_url,
+            "parse_mode": parse_mode,
+        }
+        if caption is not None:
+            payload["caption"] = caption
 
         response = await self.client.post(
             url,
@@ -171,7 +217,7 @@ class MockMaxClient:
     async def send_photo(
         self,
         photo_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         self.sent_photos.append({
@@ -186,7 +232,7 @@ class MockMaxClient:
     async def send_document(
         self,
         document_url: str,
-        caption: str = "",
+        caption: Optional[str] = None,
         parse_mode: str = "HTML",
     ) -> Dict[str, Any]:
         return {"message_id": 1, "ok": True}

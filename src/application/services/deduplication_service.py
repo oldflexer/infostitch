@@ -7,7 +7,7 @@ Implements multi-stage deduplication:
 """
 from __future__ import annotations
 
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from domain.value_objects.embedding import Embedding
 from domain.value_objects.url import URL
