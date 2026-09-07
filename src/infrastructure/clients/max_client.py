@@ -182,3 +182,11 @@ class MockMaxClient:
 
     async def get_me(self) -> Dict[str, Any]:
         return {"id": 123456, "username": "test_bot", "first_name": "Test Bot"}
+
+    async def send_document(
+        self,
+        document_url: str,
+        caption: str = "",
+        parse_mode: str = "HTML",
+    ) -> Dict[str, Any]:
+        return {"message_id": 1, "ok": True}

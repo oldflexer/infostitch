@@ -6,6 +6,7 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 
 from application.services.embedding_service import EmbeddingService
+from domain.value_objects.embedding import Embedding
 
 
 class TestEmbeddingService:
@@ -28,7 +29,7 @@ class TestEmbeddingService:
         text = "Test article about AI breakthrough"
         result = await embedding_service.generate_embedding(text)
 
-        assert isinstance(result, list)
+        assert isinstance(result, Embedding)
         assert len(result) == 768
         assert all(isinstance(v, float) for v in result)
 
@@ -42,7 +43,7 @@ class TestEmbeddingService:
             task_type="RETRIEVAL_DOCUMENT",
         )
 
-        assert isinstance(result, list)
+        assert isinstance(result, Embedding)
         assert len(result) == 768
 
     @pytest.mark.asyncio

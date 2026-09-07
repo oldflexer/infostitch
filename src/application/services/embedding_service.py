@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+from domain.value_objects.embedding import Embedding
 from infrastructure.clients.gemini_client import GeminiClient, MockGeminiClient
 from infrastructure.clients.protocols import LLMClientProtocol
 from infrastructure.config import get_settings
@@ -28,7 +29,7 @@ class EmbeddingService:
         text: str,
         model: Optional[str] = None,
         task_type: str = "RETRIEVAL_DOCUMENT",
-    ) -> List[float]:
+    ) -> Embedding:
         """Generate embedding for single text."""
         settings = get_settings()
         model = model or settings.embedding_model
@@ -43,7 +44,7 @@ class EmbeddingService:
         texts: List[str],
         model: Optional[str] = None,
         task_type: str = "RETRIEVAL_DOCUMENT",
-    ) -> List[List[float]]:
+    ) -> List[Embedding]:
         """Generate embeddings for multiple texts."""
         settings = get_settings()
         model = model or settings.embedding_model

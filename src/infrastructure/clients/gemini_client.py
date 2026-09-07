@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential_jitter
 
+from domain.value_objects.embedding import Embedding
 from infrastructure.config import get_settings
 
 
@@ -107,7 +108,7 @@ class GeminiClient:
         text: str,
         model: str = "text-embedding-004",
         task_type: str = "RETRIEVAL_DOCUMENT",
-    ) -> List[float]:
+    ) -> Embedding:
         """Generate embedding for text."""
         url = f"{self._base_url}/models/{model}:embedContent"
 
@@ -130,7 +131,7 @@ class GeminiClient:
         if not values:
             raise ValueError("Empty embedding returned from Gemini")
 
-        return values
+        return Embedding(values)
 
     @retry(
         wait=wait_exponential_jitter(initial=1, max=10),
@@ -142,7 +143,7 @@ class GeminiClient:
         texts: List[str],
         model: str = "text-embedding-004",
         task_type: str = "RETRIEVAL_DOCUMENT",
-    ) -> List[List[float]]:
+    ) -> List[Embedding]:
         """Generate embeddings for multiple texts."""
         url = f"{self._base_url}/models/{model}:batchEmbedContents"
 
@@ -167,7 +168,7 @@ class GeminiClient:
             values = emb_data.get("values", [])
             if not values:
                 raise ValueError("Empty embedding in batch response")
-            embeddings.append(values)
+            embeddings.append(Embedding(values))
 
         return embeddings
 
@@ -227,17 +228,17 @@ class MockGeminiClient:
         text: str,
         model: str = "text-embedding-004",
         task_type: str = "RETRIEVAL_DOCUMENT",
-    ) -> List[float]:
+    ) -> Embedding:
         self.embedding_call_count += 1
         # Return deterministic mock embedding based on text hash
         import hashlib
         hash_val = int(hashlib.md5(text.encode()).hexdigest()[:8], 16)
-        return [(hash_val >> i & 1) * 0.1 for i in range(768)]
+        return Embedding([(hash_val >> i & 1) * 0.1 for i in range(768)])
 
     async def generate_embeddings_batch(
         self,
         texts: List[str],
         model: str = "text-embedding-004",
         task_type: str = "RETRIEVAL_DOCUMENT",
-    ) -> List[List[float]]:
+    ) -> List[Embedding]:
         return [await self.generate_embedding(t, model, task_type) for t in texts]

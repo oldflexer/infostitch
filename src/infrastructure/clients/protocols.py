@@ -18,15 +18,26 @@ class LLMClientProtocol(Protocol):
         system_instruction: Optional[str] = None,
         temperature: float = 0.7,
         max_output_tokens: int = 2048,
+        response_mime_type: str = "text/plain",
     ) -> str:
         """Generate text content from prompt."""
         ...
 
-    async def generate_embedding(self, text: str) -> Embedding:
+    async def generate_embedding(
+        self,
+        text: str,
+        model: str = "text-embedding-004",
+        task_type: str = "RETRIEVAL_DOCUMENT",
+    ) -> Embedding:
         """Generate embedding for text."""
         ...
 
-    async def generate_embeddings_batch(self, texts: List[str]) -> List[Embedding]:
+    async def generate_embeddings_batch(
+        self,
+        texts: List[str],
+        model: str = "text-embedding-004",
+        task_type: str = "RETRIEVAL_DOCUMENT",
+    ) -> List[Embedding]:
         """Generate embeddings for multiple texts."""
         ...
 
@@ -42,7 +53,7 @@ class LLMClientProtocol(Protocol):
 class ContentExtractionClientProtocol(Protocol):
     """Protocol for content extraction clients (Jina AI, etc.)."""
 
-    async def extract_content(self, url: str) -> str:
+    async def extract_content(self, url: str) -> Dict[str, Any]:
         """Extract main content from URL."""
         ...
 
@@ -50,17 +61,17 @@ class ContentExtractionClientProtocol(Protocol):
         self,
         url: str,
         timeout: int = 30,
-        no_images: bool = False,
-        no_links: bool = False,
+        with_generated_alt: bool = True,
+        with_images_summary: bool = True,
     ) -> Dict[str, Any]:
         """Extract content with options."""
         ...
 
-    async def extract_image_url(self, url: str) -> Optional[str]:
+    async def extract_image_url(self, data: Dict[str, Any]) -> Optional[str]:
         """Extract featured image URL from page."""
         ...
 
-    async def clean_content(self, content: str) -> str:
+    async def clean_content(self, content: str, max_length: int = 6000) -> str:
         """Clean extracted content."""
         ...
 
@@ -70,11 +81,10 @@ class ContentExtractionClientProtocol(Protocol):
 
 
 class PublisherClientProtocol(Protocol):
-    """Protocol for publisher clients (Telegram, VK, Max)."""
+    """Protocol for publisher clients (Telegram, Max)."""
 
     async def send_message(
         self,
-        chat_id: str,
         text: str,
         parse_mode: str = "HTML",
         disable_web_page_preview: bool = True,
@@ -84,7 +94,6 @@ class PublisherClientProtocol(Protocol):
 
     async def send_photo(
         self,
-        chat_id: str,
         photo_url: str,
         caption: Optional[str] = None,
         parse_mode: str = "HTML",
@@ -94,7 +103,6 @@ class PublisherClientProtocol(Protocol):
 
     async def send_document(
         self,
-        chat_id: str,
         document_url: str,
         caption: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -110,8 +118,8 @@ class PublisherClientProtocol(Protocol):
         ...
 
 
-class VKClientProtocol(PublisherClientProtocol):
-    """Extended protocol for VK-specific features."""
+class VKClientProtocol(Protocol):
+    """Protocol for VK-specific features."""
 
     async def get_wall_upload_server(self, group_id: str) -> str:
         """Get upload server URL for wall photos."""
@@ -127,7 +135,7 @@ class VKClientProtocol(PublisherClientProtocol):
         photo: str,
         server: int,
         hash: str,
-    ) -> Dict[str, Any]:
+    ) -> List[Dict[str, Any]]:
         """Save wall photo."""
         ...
 
@@ -139,3 +147,20 @@ class VKClientProtocol(PublisherClientProtocol):
     ) -> Dict[str, Any]:
         """Post to wall."""
         ...
+
+    async def post_with_photo(
+        self,
+        message: str,
+        photo_url: str,
+    ) -> Dict[str, Any]:
+        """Download photo, upload to VK, and post to wall."""
+        ...
+
+    async def close(self) -> None:
+        """Close client connections."""
+        ...
+"""Protocol definitions for client interfaces.
+
+These protocols define the expected interface for external API clients,
+allowing both real implementations and mocks to be used interchangeably.
+"""

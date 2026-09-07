@@ -4,12 +4,13 @@ Sends critical error notifications via Telegram.
 """
 from __future__ import annotations
 
-import asyncio
+import time
 from typing import Optional
 
 import structlog
 
 from infrastructure.clients.telegram_client import TelegramClient, MockTelegramClient
+from infrastructure.clients.protocols import PublisherClientProtocol
 from infrastructure.config import get_settings
 
 logger = structlog.get_logger(__name__)
@@ -18,12 +19,12 @@ logger = structlog.get_logger(__name__)
 class NotificationService:
     """Service for sending error notifications."""
 
-    def __init__(self, client: Optional[TelegramClient] = None):
+    def __init__(self, client: Optional[PublisherClientProtocol] = None):
         self._client = client or self._create_default_client()
         self._rate_limiter: dict[str, float] = {}
         self._min_interval = 60.0  # Minimum seconds between same error notifications
 
-    def _create_default_client(self) -> TelegramClient:
+    def _create_default_client(self) -> PublisherClientProtocol:
         settings = get_settings()
         configs = settings.get_channel_configs()
         tg_config = configs.get("telegram", {})
@@ -53,7 +54,6 @@ class NotificationService:
         """
         # Rate limiting
         error_key = f"{type(error).__name__}:{str(error)[:100]}"
-        import time
         now = time.time()
         if error_key in self._rate_limiter:
             if now - self._rate_limiter[error_key] < self._min_interval:
