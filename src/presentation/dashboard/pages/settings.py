@@ -330,7 +330,7 @@ async def _render_templates_tab(
 
     with st.form("templates_form"):
         st.write("**Template Pool (JSON Array)**")
-        pool_json = st.text_area(
+        _ = st.text_area(
             "Template Pool",
             value=json.dumps(pool, indent=2),
             height=200,

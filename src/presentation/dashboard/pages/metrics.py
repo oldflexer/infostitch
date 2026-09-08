@@ -222,9 +222,10 @@ def _render_deduplication_charts(df: pd.DataFrame) -> None:
                 'is_duplicate'].mean().reset_index()
             dup_by_source.columns = ['source_id', 'duplicate_rate']
             dup_by_source['duplicate_rate'] = dup_by_source['duplicate_rate'] * 100
-            fig = px.bar(
+            if px is not None:
+                fig = px.bar(
                 dup_by_source,
                 x='source_id',
                 y='duplicate_rate',
-                title='Duplicate Rate by Source (%)')
-            st.plotly_chart(fig, use_container_width=True)
+                title='Duplicate Rate by Source (%')
+                st.plotly_chart(fig, use_container_width=True)

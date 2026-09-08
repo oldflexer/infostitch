@@ -12,9 +12,9 @@ from typing import Any, Dict
 try:
     from streamlit_autorefresh import st_autorefresh
 except ImportError:
-    def st_autorefresh(interval: int, key: str) -> None:
+    def st_autorefresh(interval: int = 1000, *, limit: int | None = None, debounce: bool = True, key: str | None = None) -> int:
         """Fallback when streamlit_autorefresh is not installed."""
-        pass
+        return 0
 
 try:
     import plotly.express as px
@@ -29,7 +29,7 @@ async def render_logs(
     db_settings: Dict[str, Any],
 ) -> None:
     """Render the logs page."""
-    st.markdown('<div class="main-header">📋 Logs</div>',
+    st.markdown('<div class="main-header">рџ“‹ Logs</div>',
                 unsafe_allow_html=True)
 
     # Initialize session state for logs
@@ -59,7 +59,7 @@ async def render_logs(
 
 def _render_log_filters() -> None:
     """Render log filter controls."""
-    st.subheader("🔍 Filters")
+    st.subheader("рџ”Ќ Filters")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -142,7 +142,7 @@ def _render_log_filters() -> None:
 
 async def _render_logs_table(log_repo: Any) -> None:
     """Render the logs table with pagination."""
-    st.subheader("📋 Log Entries")
+    st.subheader("рџ“‹ Log Entries")
 
     # Get pagination
     page = st.session_state.get("logs_page", 1)
@@ -207,7 +207,7 @@ async def _render_logs_table(log_repo: Any) -> None:
     if total_pages > 1:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col1:
-            if st.button("⬅️ Previous", disabled=page <= 1,
+            if st.button("в¬…пёЏ Previous", disabled=page <= 1,
                          use_container_width=True):
                 st.session_state.logs_page = page - 1
                 st.rerun()
@@ -216,7 +216,7 @@ async def _render_logs_table(log_repo: Any) -> None:
                 f"<div style='text-align: center'>Page {page} of {total_pages} ({total_count} total)</div>",
                 unsafe_allow_html=True)
         with col3:
-            if st.button("Next ➡️", disabled=page >= total_pages,
+            if st.button("Next вћЎпёЏ", disabled=page >= total_pages,
                          use_container_width=True):
                 st.session_state.logs_page = page + 1
                 st.rerun()
@@ -224,7 +224,7 @@ async def _render_logs_table(log_repo: Any) -> None:
 
 def _render_log_detail(log: Any) -> None:
     """Render detailed log view in an expander."""
-    with st.expander("📄 Log Detail", expanded=True):
+    with st.expander("рџ“„ Log Detail", expanded=True):
         col1, col2 = st.columns(2)
         with col1:
             st.write(f"**Time:** {log.timestamp}")
@@ -248,7 +248,7 @@ def _render_log_detail(log: Any) -> None:
 
 async def _render_log_stats(log_repo: Any) -> None:
     """Render log statistics."""
-    st.subheader("📊 Log Statistics")
+    st.subheader("рџ“Љ Log Statistics")
 
     # Get stats for last 24 hours
     end_time = datetime.now()
