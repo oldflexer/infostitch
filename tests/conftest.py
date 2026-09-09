@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import StaticPool
 
 from infrastructure.config import Settings
+from domain.value_objects.url import URL
 from infrastructure.db.repositories.article_repo import SqlAlchemyArticleRepository
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
 from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository

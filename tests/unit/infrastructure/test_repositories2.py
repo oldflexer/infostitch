@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -64,7 +64,7 @@ class TestSqlAlchemySourceRepository:
         assert model.enabled is True
 
     @pytest.mark.asyncio
-    async def test_to_model(self, repo, sample_source):
+    async def test_to_model2(self, repo, sample_source):
         """Test _to_model conversion."""
         model = repo._to_model(sample_source)
 
@@ -263,7 +263,7 @@ class TestSqlAlchemySourceRepository:
 
 
 
-class TestSqlAlchemyPostRepository3:
+class TestSqlAlchemyPostRepository4:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
@@ -343,7 +343,7 @@ class TestSqlAlchemyPostRepository3:
 
 
 
-class TestSqlAlchemyPostRepository3:
+class TestSqlAlchemyPostRepository4:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
