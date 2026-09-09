@@ -100,7 +100,7 @@ class TestEmbedding:
     def test_non_numeric_raises(self):
         """Test that non-numeric values raise ValueError."""
         with pytest.raises(ValueError, match="could not convert string to float"):
-            Embedding.from_list([1.0, "invalid", 3.0])
+            Embedding.from_list([1.0, "invalid", 3.0])  # type: ignore[arg-type]
 
     def test_dimension_property(self):
         """Test dimension property."""

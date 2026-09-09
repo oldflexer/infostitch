@@ -1,7 +1,6 @@
 """Unit tests for Post entity."""
 from __future__ import annotations
 
-import pytest
 from datetime import datetime, timezone
 
 from domain.entities.post import Post

@@ -6,7 +6,6 @@ from datetime import datetime, timezone, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from sqlalchemy import select
 
 from domain.entities.log import Log
 from domain.entities.user import User

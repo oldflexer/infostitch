@@ -6,18 +6,12 @@ from datetime import datetime, timezone, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from sqlalchemy import select
 
 from domain.entities.article import Article
 from domain.entities.channel import Channel
-from domain.entities.post import Post
-from domain.entities.rss_source import RssSource
-from domain.value_objects.embedding import Embedding
 from domain.value_objects.url import URL
 from infrastructure.db.repositories.article_repo import SqlAlchemyArticleRepository
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
-from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
-from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
 
 
 class TestSqlAlchemyArticleRepository:

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock
 
 from application.services.embedding_service import EmbeddingService
 from domain.value_objects.embedding import Embedding

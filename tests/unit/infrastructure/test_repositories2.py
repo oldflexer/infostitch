@@ -6,7 +6,6 @@ from datetime import datetime, timezone, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from sqlalchemy import select
 
 from domain.entities.llm_model import LLMModel
 from domain.entities.post import Post
@@ -265,7 +264,7 @@ class TestSqlAlchemySourceRepository:
 
 
 
-class TestSqlAlchemyPostRepository:
+class TestSqlAlchemyPostRepository2:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
@@ -291,7 +290,7 @@ class TestSqlAlchemyPostRepository:
             title="Test Post",
             summary="Test summary",
             content="Test content",
-            clean_url=URL.from_string("https://example.com/post"),
+            clean_url="https://example.com/post",
             embedding=Embedding([0.1] * 768),
             image_url="https://example.com/image.jpg",
             is_duplicate=False,
@@ -327,7 +326,7 @@ class TestSqlAlchemyPostRepository:
         assert entity.is_duplicate is False
 
     @pytest.mark.asyncio
-    async def test_to_model(self, repo, sample_post):
+    async def test_to_model2(self, repo, sample_post):
         """Test _to_model conversion."""
         model = repo._to_model(sample_post)
 
@@ -345,7 +344,7 @@ class TestSqlAlchemyPostRepository:
 
 
 
-class TestSqlAlchemyPostRepository:
+class TestSqlAlchemyPostRepository2:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
@@ -371,7 +370,7 @@ class TestSqlAlchemyPostRepository:
             title="Test Post",
             summary="Test summary",
             content="Test content",
-            clean_url=URL.from_string("https://example.com/post"),
+            clean_url="https://example.com/post",
             embedding=Embedding([0.1] * 768),
             image_url="https://example.com/image.jpg",
             is_duplicate=False,
@@ -407,7 +406,7 @@ class TestSqlAlchemyPostRepository:
         assert entity.is_duplicate is False
 
     @pytest.mark.asyncio
-    async def test_to_model(self, repo, sample_post):
+    async def test_to_model2(self, repo, sample_post):
         """Test _to_model conversion."""
         model = repo._to_model(sample_post)
 

@@ -1,7 +1,6 @@
 """Unit tests for Log entity."""
 from __future__ import annotations
 
-import pytest
 from datetime import datetime, timezone
 
 from domain.entities.log import Log

@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 from collections.abc import AsyncGenerator
 from typing import Any
-from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -38,10 +37,11 @@ fake = Faker()
 # Test Database Fixtures
 # ============================================================================
 
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture(scope="session")
 def event_loop():
     """Create event loop for async tests."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
     yield loop
     loop.close()
 
@@ -192,92 +192,6 @@ def mock_max_client():
     """Mock Max client."""
     from infrastructure.clients.max_client import MockMaxClient
     return MockMaxClient()
-
-# ============================================================================
-# Repository Fixtures
-# ============================================================================
-
-
-@pytest.fixture
-def source_repo(test_session: AsyncSession) -> SqlAlchemySourceRepository:
-    """Source repository fixture."""
-    return SqlAlchemySourceRepository(test_session)
-
-
-@pytest.fixture
-def channel_repo(test_session: AsyncSession) -> SqlAlchemyChannelRepository:
-    """Channel repository fixture."""
-    return SqlAlchemyChannelRepository(test_session)
-
-
-@pytest.fixture
-def llm_model_repo(test_session: AsyncSession) -> SqlAlchemyLLMModelRepository:
-    """LLM model repository fixture."""
-    return SqlAlchemyLLMModelRepository(test_session)
-
-
-@pytest.fixture
-def setting_repo(test_session: AsyncSession) -> SqlAlchemySettingRepository:
-    """Setting repository fixture."""
-    return SqlAlchemySettingRepository(test_session)
-
-
-@pytest.fixture
-def post_repo(test_session: AsyncSession) -> SqlAlchemyPostRepository:
-    """Post repository fixture."""
-    return SqlAlchemyPostRepository(test_session)
-
-
-@pytest.fixture
-def user_repo(test_session: AsyncSession) -> SqlAlchemyUserRepository:
-    """User repository fixture."""
-    return SqlAlchemyUserRepository(test_session)
-
-
-@pytest.fixture
-def log_repo(test_session: AsyncSession) -> SqlAlchemyLogRepository:
-    """Log repository fixture."""
-    return SqlAlchemyLogRepository(test_session)
-
-
-# ============================================================================
-# Mock Client Fixtures
-# ============================================================================
-
-@pytest.fixture
-def mock_gemini_client():
-    """Mock Gemini client."""
-    from infrastructure.clients.gemini_client import MockGeminiClient
-    return MockGeminiClient()
-
-
-@pytest.fixture
-def mock_jina_client():
-    """Mock Jina client."""
-    from infrastructure.clients.jina_client import MockJinaClient
-    return MockJinaClient()
-
-
-@pytest.fixture
-def mock_telegram_client():
-    """Mock Telegram client."""
-    from infrastructure.clients.telegram_client import MockTelegramClient
-    return MockTelegramClient()
-
-
-@pytest.fixture
-def mock_vk_client():
-    """Mock VK client."""
-    from infrastructure.clients.vk_client import MockVKClient
-    return MockVKClient()
-
-
-@pytest.fixture
-def mock_max_client():
-    """Mock Max client."""
-    from infrastructure.clients.max_client import MockMaxClient
-    return MockMaxClient()
-
 
 # ============================================================================
 # Test Data Fixtures

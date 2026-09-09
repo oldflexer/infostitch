@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock
 
-from application.services.publisher_service import PublisherService
 
 
 class TestPublisherService:

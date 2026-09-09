@@ -4,9 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any, Dict, List
-from unittest.mock import MagicMock, patch
 
-import pytest
 from sqlalchemy import inspect
 
 from infrastructure.db.sqlalchemy_models import (

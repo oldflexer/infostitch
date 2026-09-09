@@ -51,8 +51,7 @@ class TestDeduplicateStep:
     def mock_dedup_service(self):
         """Create a mock deduplication service."""
         from application.services.deduplication_service import DeduplicationService
-        from unittest.mock import MagicMock
-        # Create a mock that doesn't require post_repo
+                # Create a mock that doesn't require post_repo
         service = MagicMock(spec=DeduplicationService)
         service.filter_by_url = AsyncMock(side_effect=lambda articles: [
             a for i, a in enumerate(articles)

@@ -5,11 +5,9 @@ from __future__ import annotations
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from application.pipeline.pipeline import Pipeline
 from application.dto.pipeline_context import PipelineContext
 from domain.entities.rss_source import RssSource
 from domain.entities.post import Post
-from domain.value_objects.embedding import Embedding
 
 
 class TestFullPipelineE2E:

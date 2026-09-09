@@ -1,20 +1,11 @@
 """Unit tests for domain entities."""
 from __future__ import annotations
 
-import pytest
 from datetime import datetime, timezone
 from faker import Faker
 
 from domain.entities.article import Article
-from domain.entities.channel import Channel
-from domain.entities.llm_model import LLMModel
-from domain.entities.log import Log
-from domain.entities.post import Post
-from domain.entities.rss_source import RssSource
-from domain.entities.user import User
-from domain.value_objects.embedding import Embedding
 from domain.value_objects.url import URL
-from domain.value_objects.template import Template
 
 fake = Faker()
 

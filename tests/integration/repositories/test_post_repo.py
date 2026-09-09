@@ -6,7 +6,6 @@ from datetime import datetime, timezone, timedelta
 
 from domain.entities.post import Post
 from domain.value_objects.embedding import Embedding
-from domain.value_objects.url import URL
 
 
 class TestPostRepository:
