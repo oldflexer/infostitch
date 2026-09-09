@@ -11,8 +11,8 @@ from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from infrastructure.config import Settings
 from domain.value_objects.url import URL
+from infrastructure.config import Settings
 from infrastructure.db.repositories.article_repo import SqlAlchemyArticleRepository
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
 from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository
@@ -391,8 +391,7 @@ def publisher_service(test_settings, mock_telegram_client,
                       mock_vk_client, mock_max_client) -> Any:
     """Create PublisherService with test settings and mock clients."""
     from application.services.publisher_service import PublisherService
-    from infrastructure.config import Settings
-    # Patch get_settings in both the config module AND the publisher_service module
+        # Patch get_settings in both the config module AND the publisher_service module
     # because publisher_service imports get_settings directly
     import infrastructure.config as config_module
     import application.services.publisher_service as publisher_module
