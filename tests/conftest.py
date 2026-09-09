@@ -76,37 +76,32 @@ async def test_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture
-def test_settings() -> Settings:
-    """Create test settings."""
-    return Settings(
-        app_env="test",
-        database_url="sqlite+aiosqlite:///:memory:",
-        gemini_api_key="test-gemini-key",
-        jina_api_key="test-jina-key",
-        telegram_bot_token="test-telegram-token",
-        telegram_chat_id="test-chat-id",
-        vk_access_token="test-vk-token",
-        vk_group_id="test-vk-group",
-        max_bot_token="test-max-token",
-        max_chat_id="test-max-chat",
-        jaccard_threshold=0.55,
-        embedding_similarity_threshold=0.75,
-        dedup_window_days_stage1=7,
-        dedup_window_days_stage2=5,
-        cleanup_retention_days=90,
-        pipeline_interval_hours=3,
-        max_articles_per_run=20,
-        post_length_min=700,
-        post_length_max=3000,
-        post_total_max_length=1000,
-        embedding_model="text-embedding-004",
-        default_template_id="news_brief",
-        template_pool=[
-            "news_brief", "deep_dive", "quick_take", "expert_opinion",
-            "case_study", "trend_analysis", "tool_review", "research_summary",
-            "industry_news", "tutorial_style"
-        ],
-    )
+def test_settings(monkeypatch) -> Settings:
+    """Create test settings via environment variables."""
+    monkeypatch.setenv("APP_ENV", "test")
+    monkeypatch.setenv("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
+    monkeypatch.setenv("JINA_API_KEY", "test-jina-key")
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-telegram-token")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "test-chat-id")
+    monkeypatch.setenv("VK_ACCESS_TOKEN", "test-vk-token")
+    monkeypatch.setenv("VK_GROUP_ID", "test-vk-group")
+    monkeypatch.setenv("MAX_BOT_TOKEN", "test-max-token")
+    monkeypatch.setenv("MAX_CHAT_ID", "test-max-chat")
+    monkeypatch.setenv("JACCARD_THRESHOLD", "0.55")
+    monkeypatch.setenv("EMBEDDING_SIMILARITY_THRESHOLD", "0.75")
+    monkeypatch.setenv("DEDUP_WINDOW_DAYS_STAGE1", "7")
+    monkeypatch.setenv("DEDUP_WINDOW_DAYS_STAGE2", "5")
+    monkeypatch.setenv("CLEANUP_RETENTION_DAYS", "90")
+    monkeypatch.setenv("PIPELINE_INTERVAL_HOURS", "3")
+    monkeypatch.setenv("MAX_ARTICLES_PER_RUN", "20")
+    monkeypatch.setenv("POST_LENGTH_MIN", "700")
+    monkeypatch.setenv("POST_LENGTH_MAX", "3000")
+    monkeypatch.setenv("POST_TOTAL_MAX_LENGTH", "1000")
+    monkeypatch.setenv("EMBEDDING_MODEL", "text-embedding-004")
+    monkeypatch.setenv("DEFAULT_TEMPLATE_ID", "news_brief")
+    monkeypatch.setenv("TEMPLATE_POOL", '["news_brief", "deep_dive", "quick_take", "expert_opinion", "case_study", "trend_analysis", "tool_review", "research_summary", "industry_news", "tutorial_style"]')
+    return Settings()
 
 # ============================================================================
 # Repository Fixtures
@@ -236,7 +231,6 @@ def sample_rss_feed() -> str:
 def sample_articles() -> list:
     """Create sample Article entities for testing."""
     from domain.entities.article import Article
-    from domain.value_objects.url import URL
     from datetime import datetime, timezone
 
     articles = []
@@ -260,7 +254,6 @@ def sample_posts() -> list:
     """Create sample Post entities for testing."""
     from domain.entities.post import Post
     from domain.value_objects.embedding import Embedding
-    from domain.value_objects.url import URL
     from datetime import datetime, timezone
     import random
 
@@ -365,45 +358,6 @@ def populated_pipeline_context(sample_articles) -> Any:
     context.raw_articles = sample_articles
     context.deduplicated_articles = sample_articles
     return context
-
-
-# ============================================================================
-# Client Mock Fixtures
-# ============================================================================
-
-@pytest.fixture
-def mock_gemini_client() -> Any:
-    """Create a mock Gemini client."""
-    from infrastructure.clients.gemini_client import MockGeminiClient
-    return MockGeminiClient()
-
-
-@pytest.fixture
-def mock_jina_client() -> Any:
-    """Create a mock Jina client."""
-    from infrastructure.clients.jina_client import MockJinaClient
-    return MockJinaClient()
-
-
-@pytest.fixture
-def mock_telegram_client() -> Any:
-    """Create a mock Telegram client."""
-    from infrastructure.clients.telegram_client import MockTelegramClient
-    return MockTelegramClient()
-
-
-@pytest.fixture
-def mock_vk_client() -> Any:
-    """Create a mock VK client."""
-    from infrastructure.clients.vk_client import MockVKClient
-    return MockVKClient()
-
-
-@pytest.fixture
-def mock_max_client() -> Any:
-    """Create a mock Max client."""
-    from infrastructure.clients.max_client import MockMaxClient
-    return MockMaxClient()
 
 
 # ============================================================================

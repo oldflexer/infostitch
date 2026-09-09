@@ -176,17 +176,17 @@ class TestSettings:
             assert keys == ["key1", "key2"]
 
         with patch.dict(os.environ, {"GEMINI_API_KEY": "key1", "GEMINI_API_KEY_2": ""}, clear=True):
-            settings = Settings(_env_file=None)
+            settings = Settings()
             keys = settings.get_gemini_api_keys()
             assert keys == ["key1"]
 
         with patch.dict(os.environ, {"GEMINI_API_KEY": "", "GEMINI_API_KEY_2": ""}, clear=True):
-            settings = Settings(_env_file=None)
+            settings = Settings()
             keys = settings.get_gemini_api_keys()
             assert keys == []
 
         with patch.dict(os.environ, {"GEMINI_API_KEY": "", "GEMINI_API_KEY_2": ""}, clear=True):
-            settings = Settings(_env_file=None)
+            settings = Settings()
             keys = settings.get_gemini_api_keys()
             assert keys == []
 

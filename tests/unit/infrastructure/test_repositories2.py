@@ -11,7 +11,6 @@ from domain.entities.llm_model import LLMModel
 from domain.entities.post import Post
 from domain.entities.rss_source import RssSource
 from domain.value_objects.embedding import Embedding
-from domain.value_objects.url import URL
 from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository
 from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
 from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
@@ -264,7 +263,7 @@ class TestSqlAlchemySourceRepository:
 
 
 
-class TestSqlAlchemyPostRepository2:
+class TestSqlAlchemyPostRepository3:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
@@ -326,7 +325,7 @@ class TestSqlAlchemyPostRepository2:
         assert entity.is_duplicate is False
 
     @pytest.mark.asyncio
-    async def test_to_model2(self, repo, sample_post):
+    async def test_to_model3(self, repo, sample_post):
         """Test _to_model conversion."""
         model = repo._to_model(sample_post)
 
@@ -344,7 +343,7 @@ class TestSqlAlchemyPostRepository2:
 
 
 
-class TestSqlAlchemyPostRepository2:
+class TestSqlAlchemyPostRepository3:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
@@ -406,7 +405,7 @@ class TestSqlAlchemyPostRepository2:
         assert entity.is_duplicate is False
 
     @pytest.mark.asyncio
-    async def test_to_model2(self, repo, sample_post):
+    async def test_to_model3(self, repo, sample_post):
         """Test _to_model conversion."""
         model = repo._to_model(sample_post)
 

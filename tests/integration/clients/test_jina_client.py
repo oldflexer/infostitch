@@ -110,10 +110,12 @@ class TestJinaClient:
     @pytest.mark.asyncio
     async def test_get_headers_without_api_key(self):
         """Test headers without API key."""
-        client = JinaClient(api_key=None)
-        headers = client._get_headers()
-        assert headers["Accept"] == "application/json"
-        assert "Authorization" not in headers
+        with patch("infrastructure.clients.jina_client.get_settings") as mock_get_settings:
+            mock_get_settings.return_value.jina_api_key = ""
+            client = JinaClient(api_key="")
+            headers = client._get_headers()
+            assert headers["Accept"] == "application/json"
+            assert "Authorization" not in headers
 
     @pytest.mark.asyncio
     async def test_extract_image_url_from_featured(self, jina_client):
