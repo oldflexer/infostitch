@@ -108,7 +108,7 @@ class TestGeneratePostStep:
 
         context = PipelineContext(extracted_articles=sample_extracted_articles)
 
-        result = await generate_post_step.execute(context)
+        _ = await generate_post_step.execute(context)
 
         # Should have called generate_post twice with different templates
         assert mock_llm_service.generate_post.call_count == 2

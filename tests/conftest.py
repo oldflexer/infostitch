@@ -13,27 +13,26 @@ from sqlalchemy.pool import StaticPool
 
 from domain.value_objects.url import URL
 from infrastructure.config import Settings
-from infrastructure.db.repositories.article_repo import SqlAlchemyArticleRepository
-from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository
-from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository
-from infrastructure.db.repositories.log_repo import SqlAlchemyLogRepository
-from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository
-from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository
-from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository
-from infrastructure.db.repositories.user_repo import SqlAlchemyUserRepository
+from infrastructure.db.repositories.article_repo import SqlAlchemyArticleRepository  # noqa: F401
+from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository  # noqa: F401
+from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository  # noqa: F401
+from infrastructure.db.repositories.log_repo import SqlAlchemyLogRepository  # noqa: F401
+from infrastructure.db.repositories.post_repo import SqlAlchemyPostRepository  # noqa: F401
+from infrastructure.db.repositories.setting_repo import SqlAlchemySettingRepository  # noqa: F401
+from infrastructure.db.repositories.source_repo import SqlAlchemySourceRepository  # noqa: F401
+from infrastructure.db.repositories.user_repo import SqlAlchemyUserRepository  # noqa: F401
 from infrastructure.db.sqlalchemy_models import Base
 from infrastructure.db.sqlalchemy_models import (
-    Channel as ChannelModel,
-    LLMModel as LLMModelModel,
-    PublishedPost as PublishedPostModel,
-    RssSource as RssSourceModel,
-    Setting as SettingModel,
-    User as UserModel,
+    Channel as ChannelModel,  # noqa: F401
+    LLMModel as LLMModelModel,  # noqa: F401
+    PublishedPost as PublishedPostModel,  # noqa: F401
+    RssSource as RssSourceModel,  # noqa: F401
+    Setting as SettingModel,  # noqa: F401
+    User as UserModel,  # noqa: F401
 )
 
 # These imports are used by integration tests that import from conftest
 # They are intentionally kept for test modules that import from conftest
-# noqa: F401
 
 fake = Faker()
 
