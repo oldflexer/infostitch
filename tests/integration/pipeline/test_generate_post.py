@@ -67,7 +67,6 @@ class TestGeneratePostStep:
         context = PipelineContext(extracted_articles=sample_extracted_articles)
 
         result = await generate_post_step.execute(context)
-
         assert len(result.generated_posts) == 2
         assert result.metrics["generated_count"] == 2
 
@@ -157,7 +156,7 @@ class TestGeneratePostStep:
         context = PipelineContext(
             extracted_articles=sample_extracted_articles[:1])
 
-        result = await generate_post_step.execute(context)
+        _ = await generate_post_step.execute(context)
 
         call_args = mock_llm_service.generate_post.call_args
         assert call_args.kwargs["min_length"] == 500

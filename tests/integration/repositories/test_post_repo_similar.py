@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import pytest
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 from domain.entities.post import Post
 from domain.value_objects.embedding import Embedding

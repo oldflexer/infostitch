@@ -31,6 +31,10 @@ from infrastructure.db.sqlalchemy_models import (
     User as UserModel,
 )
 
+# These imports are used by integration tests that import from conftest
+# They are intentionally kept for test modules that import from conftest
+# noqa: F401
+
 fake = Faker()
 
 

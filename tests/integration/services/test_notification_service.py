@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 from application.services.notification_service import NotificationService
 from infrastructure.clients.telegram_client import MockTelegramClient

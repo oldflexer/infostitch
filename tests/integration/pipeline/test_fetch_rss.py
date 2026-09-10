@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from application.dto.pipeline_context import PipelineContext
 from domain.entities.rss_source import RssSource
