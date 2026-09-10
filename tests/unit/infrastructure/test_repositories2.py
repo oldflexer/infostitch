@@ -263,7 +263,7 @@ class TestSqlAlchemySourceRepository:
 
 
 
-class TestSqlAlchemyPostRepository6:
+class TestSqlAlchemyPostRepository7:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
@@ -343,7 +343,7 @@ class TestSqlAlchemyPostRepository6:
 
 
 
-class TestSqlAlchemyPostRepository6:
+class TestSqlAlchemyPostRepository7:
     """Tests for SqlAlchemyPostRepository."""
 
     @pytest.fixture
