@@ -13,6 +13,10 @@ from sqlalchemy.pool import StaticPool
 
 from domain.value_objects.url import URL
 from infrastructure.config import Settings
+
+# These imports are used by integration tests that import from conftest
+# They are intentionally kept for test modules that import from conftest
+# noqa: F401
 from infrastructure.db.repositories.article_repo import SqlAlchemyArticleRepository  # noqa: F401
 from infrastructure.db.repositories.channel_repo import SqlAlchemyChannelRepository  # noqa: F401
 from infrastructure.db.repositories.llm_model_repo import SqlAlchemyLLMModelRepository  # noqa: F401
@@ -30,9 +34,6 @@ from infrastructure.db.sqlalchemy_models import (
     Setting as SettingModel,  # noqa: F401
     User as UserModel,  # noqa: F401
 )
-
-# These imports are used by integration tests that import from conftest
-# They are intentionally kept for test modules that import from conftest
 
 fake = Faker()
 
