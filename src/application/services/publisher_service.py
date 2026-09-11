@@ -1,6 +1,6 @@
 """Publisher Service.
 
-Manages publishing to multiple channels (Telegram, VK, Max).
+Manages publishing to multiple channels (Telegram, Max).
 """
 from __future__ import annotations
 
@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Optional
 
 from infrastructure.clients.max_client import MaxClient, MockMaxClient
 from infrastructure.clients.telegram_client import TelegramClient, MockTelegramClient
-from infrastructure.clients.vk_client import VKClient, MockVKClient
-from infrastructure.clients.protocols import PublisherClientProtocol, VKClientProtocol
+from infrastructure.clients.protocols import PublisherClientProtocol
 from infrastructure.config import get_settings
 
 
@@ -54,37 +53,6 @@ class TelegramPublisher(PublisherClient):
         await self._client.close()
 
 
-class VKPublisher(PublisherClient):
-    """VK publisher."""
-
-    def __init__(self, client: Optional[VKClientProtocol] = None):
-        self._client = client or self._create_default_client()
-
-    def _create_default_client(self) -> VKClientProtocol:
-        settings = get_settings()
-        configs = settings.get_channel_configs()
-        vk_config = configs.get("vk", {})
-        if not vk_config:
-            return MockVKClient()
-        return VKClient(
-            access_token=vk_config.get("access_token_ref", ""),
-            group_id=vk_config.get("group_id", ""),
-            album_id=vk_config.get("album_id"),
-        )
-
-    async def send_message(
-        self,
-        text: str,
-        image_url: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        if image_url:
-            return await self._client.post_with_photo(message=text, photo_url=image_url)
-        return await self._client.wall_post(message=text)
-
-    async def close(self) -> None:
-        await self._client.close()
-
-
 class MaxPublisher(PublisherClient):
     """Max (Odnoklassniki) publisher."""
 
@@ -121,12 +89,10 @@ class PublisherService:
     def __init__(
         self,
         telegram_client: Optional[PublisherClientProtocol] = None,
-        vk_client: Optional[VKClientProtocol] = None,
         max_client: Optional[PublisherClientProtocol] = None,
     ):
         self._publishers: Dict[str, PublisherClient] = {}
         self._telegram_client = telegram_client
-        self._vk_client = vk_client
         self._max_client = max_client
         self._init_publishers()
 
@@ -139,9 +105,6 @@ class PublisherService:
             print("DEBUG: Creating TelegramPublisher")
             self._publishers["telegram"] = TelegramPublisher(
                 client=self._telegram_client)
-        if "vk" in configs:
-            print("DEBUG: Creating VKPublisher")
-            self._publishers["vk"] = VKPublisher(client=self._vk_client)
         if "max" in configs:
             print("DEBUG: Creating MaxPublisher")
             self._publishers["max"] = MaxPublisher(client=self._max_client)

@@ -31,9 +31,6 @@ class TestSettings:
             "TELEGRAM_BOT_TOKEN": "",
             "TELEGRAM_CHAT_ID": "",
             "TELEGRAM_ADMIN_CHAT_ID": "",
-            "VK_ACCESS_TOKEN": "",
-            "VK_GROUP_ID": "",
-            "VK_ALBUM_ID": "",
             "MAX_BOT_TOKEN": "",
             "MAX_CHAT_ID": "",
             "PIPELINE_INTERVAL_HOURS": "3",
@@ -64,9 +61,6 @@ class TestSettings:
             assert settings.telegram_bot_token == ""
             assert settings.telegram_chat_id == ""
             assert settings.telegram_admin_chat_id == ""
-            assert settings.vk_access_token == ""
-            assert settings.vk_group_id == ""
-            assert settings.vk_album_id == ""
             assert settings.max_bot_token == ""
             assert settings.max_chat_id == ""
             assert settings.pipeline_interval_hours == 3
@@ -97,9 +91,6 @@ class TestSettings:
             "TELEGRAM_BOT_TOKEN": "tg-token",
             "TELEGRAM_CHAT_ID": "tg-chat",
             "TELEGRAM_ADMIN_CHAT_ID": "tg-admin",
-            "VK_ACCESS_TOKEN": "vk-token",
-            "VK_GROUP_ID": "vk-group",
-            "VK_ALBUM_ID": "vk-album",
             "MAX_BOT_TOKEN": "max-token",
             "MAX_CHAT_ID": "max-chat",
             "PIPELINE_INTERVAL_HOURS": "6",
@@ -130,9 +121,6 @@ class TestSettings:
             assert settings.telegram_bot_token == "tg-token"
             assert settings.telegram_chat_id == "tg-chat"
             assert settings.telegram_admin_chat_id == "tg-admin"
-            assert settings.vk_access_token == "vk-token"
-            assert settings.vk_group_id == "vk-group"
-            assert settings.vk_album_id == "vk-album"
             assert settings.max_bot_token == "max-token"
             assert settings.max_chat_id == "max-chat"
             assert settings.pipeline_interval_hours == 6
@@ -263,24 +251,6 @@ class TestSettings:
             assert "TELEGRAM_BOT_TOKEN" in missing
             # TELEGRAM_CHAT_ID is only required if TELEGRAM_BOT_TOKEN is set
 
-    def test_validate_missing_vk(self):
-        """Test validate with missing VK credentials."""
-        env = {
-            "APP_ENV": "production",
-            "GEMINI_API_KEY": "valid-key",
-            "JINA_API_KEY": "valid-jina",
-            "TELEGRAM_BOT_TOKEN": "valid-tg-token",
-            "TELEGRAM_CHAT_ID": "valid-chat",
-            "MAX_BOT_TOKEN": "valid-max-token",
-            "MAX_CHAT_ID": "valid-max-chat",
-            "ADMIN_PASSWORD": "secure_password",
-        }
-        with patch.dict(os.environ, env, clear=True):
-            settings = Settings()
-            missing = settings.validate_required_secrets()
-            assert "VK_ACCESS_TOKEN" in missing
-            assert "VK_GROUP_ID" in missing
-
     def test_validate_missing_max(self):
         """Test validate with missing Max credentials."""
         env = {
@@ -289,8 +259,6 @@ class TestSettings:
             "JINA_API_KEY": "valid-jina",
             "TELEGRAM_BOT_TOKEN": "valid-tg-token",
             "TELEGRAM_CHAT_ID": "valid-chat",
-            "VK_ACCESS_TOKEN": "valid-vk-token",
-            "VK_GROUP_ID": "valid-group",
             "ADMIN_PASSWORD": "secure_password",
         }
         with patch.dict(os.environ, env, clear=True):
@@ -339,8 +307,6 @@ class TestSettings:
             "JINA_API_KEY": "your_jina_api_key_here",
             "TELEGRAM_BOT_TOKEN": "your_telegram_bot_token_here",
             "TELEGRAM_CHAT_ID": "your_channel_chat_id_here",
-            "VK_ACCESS_TOKEN": "your_vk_access_token_here",
-            "VK_GROUP_ID": "your_vk_group_id_here",
             "MAX_BOT_TOKEN": "your_max_bot_token_here",
             "MAX_CHAT_ID": "your_max_chat_id_here",
             "ADMIN_PASSWORD": "secure_password",
@@ -352,8 +318,6 @@ class TestSettings:
             assert "JINA_API_KEY" in missing
             assert "TELEGRAM_BOT_TOKEN" in missing
             assert "TELEGRAM_CHAT_ID" in missing
-            assert "VK_ACCESS_TOKEN" in missing
-            assert "VK_GROUP_ID" in missing
             assert "MAX_BOT_TOKEN" in missing
             assert "MAX_CHAT_ID" in missing
 

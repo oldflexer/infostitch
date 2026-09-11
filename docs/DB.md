@@ -65,7 +65,7 @@ erDiagram
 |--------|------|-------------|-------------|
 | `id` | `BIGINT` | `PK`, autoincrement | Surrogate key |
 | `name` | `VARCHAR(100)` | `NOT NULL`, `UNIQUE` | Human-readable name (e.g., "Telegram @myaiqnews") |
-| `type` | `VARCHAR(20)` | `NOT NULL` | Enum: `telegram`, `vk`, `max` |
+| `type` | `VARCHAR(20)` | `NOT NULL` | Enum: `telegram`, `max` |
 | `enabled` | `BOOLEAN` | `NOT NULL`, `DEFAULT true` | Toggle channel on/off |
 | `config_json` | `JSONB` (PG) / `JSON` (SQLite) | `NOT NULL` | Channel-specific config (see below) |
 | `created_at` | `DATETIME` | `NOT NULL`, `DEFAULT now()` | Record creation time |
@@ -75,7 +75,7 @@ erDiagram
 | Type | Required Keys | Example |
 |------|---------------|---------|
 | `telegram` | `chat_id`, `bot_token_ref` | `{"chat_id": "-1001234567890", "bot_token_ref": "TELEGRAM_BOT_TOKEN"}` |
-| `vk` | `group_id`, `access_token_ref`, `album_id` (optional) | `{"group_id": "123456", "access_token_ref": "VK_TOKEN", "album_id": "789"}` |
+
 | `max` | `chat_id`, `bot_token_ref` | `{"chat_id": "max_chat_123", "bot_token_ref": "MAX_BOT_TOKEN"}` |
 
 > **SRS FR6.1–FR6.4**: Each channel can be enabled/disabled via DB.
@@ -442,7 +442,7 @@ class Channel(Base):
     __tablename__ = 'channels'
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    type: Mapped[str] = mapped_column(String(20), nullable=False)  # telegram, vk, max
+    type: Mapped[str] = mapped_column(String(20), nullable=False)  # telegram, max
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     config_json: Mapped[dict] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)

@@ -75,7 +75,7 @@ All layers communicate through interfaces (Dependency Inversion).
 ### 4. Database Schema (simplified)
 
 - **rss_sources** (id, url, enabled, last_fetch, created_at)
-- **channels** (id, name, type, enabled, config_json) — e.g., telegram_chat_id, vk_group_id, max_chat_id.
+- **channels** (id, name, type, enabled, config_json) — e.g., telegram_chat_id, max_chat_id.
 - **llm_models** (id, name, provider, model_id, api_key_ref, is_active)
 - **settings** (key, value, description) — thresholds, intervals, template pool.
 - **published_posts** (id, clean_url, title, summary, embedding, created_at, is_duplicate)
@@ -87,7 +87,7 @@ All layers communicate through interfaces (Dependency Inversion).
 - **Google Gemini**: for selection, generation, and embeddings.
 - **Jina AI**: for content extraction.
 - **Telegram Bot API**: sendPhoto, sendMessage.
-- **VK API**: photos.getWallUploadServer → upload → save → wall.post.
+
 - **Max API**: POST /messages with chat_id.
 
 ### 6. Error Handling Strategy

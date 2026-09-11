@@ -112,7 +112,7 @@ async def _render_channels_tab(channel_repo: Any) -> None:
     with st.expander("➕ Add New Channel", expanded=False):
         with st.form("add_channel"):
             name = st.text_input("Name", placeholder="Telegram Channel")
-            type_ = st.selectbox("Type", ["telegram", "vk", "max"])
+            type_ = st.selectbox("Type", ["telegram", "max"])
             enabled = st.checkbox("Enabled", value=True)
 
             st.write("**Configuration (JSON)**")
@@ -176,8 +176,8 @@ async def _render_channels_tab(channel_repo: Any) -> None:
                     _ = st.text_input("Name", value=channel.name)
                     _ = st.selectbox(
                         "Type", [
-                            "telegram", "vk", "max"], index=[
-                            "telegram", "vk", "max"].index(
+                            "telegram", "max"], index=[
+                            "telegram", "max"].index(
                             channel.type))
                     new_enabled = st.checkbox("Enabled", value=channel.enabled)
                     new_config = st.text_area(

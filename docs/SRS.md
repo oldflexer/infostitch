@@ -2,9 +2,9 @@
 ## News Aggregator & Publisher System
 
 ### 1. Introduction
-**Purpose**: Automate collection, filtering, and publishing of AI/tech news from multiple RSS feeds to Telegram, VK, and Max platforms.
+**Purpose**: Automate collection, filtering, and publishing of AI/tech news from multiple RSS feeds to Telegram and Max platforms.
 
-**Scope**: Internal tool for a single Telegram channel (@myaiqnews) and associated VK group and Max chat. Supports 8–10 posts per day with configurable schedule.
+**Scope**: Internal tool for a single Telegram channel (@myaiqnews) and associated Max chat. Supports 8–10 posts per day with configurable schedule.
 
 **Definitions**:
 - **Pipeline** – sequential processing chain: RSS fetch → deduplication → selection → content extraction → post generation → publishing.
@@ -44,9 +44,8 @@
 
 #### FR6: Publishing
 - **FR6.1** Send to Telegram (photo if image exists, else text).
-- **FR6.2** Send to VK (photo via upload server, else text).
-- **FR6.3** Send to Max (text + image URL if available).
-- **FR6.4** Each channel can be enabled/disabled via database.
+- **FR6.2** Send to Max (text + image URL if available).
+- **FR6.3** Each channel can be enabled/disabled via database.
 
 #### FR7: Data Persistence
 - **FR7.1** Store `published_posts` with: clean_url, title, summary, embedding (vector), created_at.
@@ -78,7 +77,7 @@
 
 - Python 3.13+.
 - SQLite initially, PostgreSQL with pgvector later.
-- External services: Google Gemini API, Jina AI, Telegram Bot API, VK API, Max platform.
+- External services: Google Gemini API, Jina AI, Telegram Bot API, Max platform.
 - No real-time requirements.
 
 ### 5. Use Cases

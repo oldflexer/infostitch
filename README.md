@@ -1,6 +1,6 @@
 # InfoStitch - News Aggregator & Publisher System
 
-Automated collection, filtering, and publishing of AI/tech news from multiple RSS feeds to Telegram, VK, and Max platforms.
+Automated collection, filtering, and publishing of AI/tech news from multiple RSS feeds to Telegram and Max platforms.
 
 ## Features
 
@@ -9,7 +9,7 @@ Automated collection, filtering, and publishing of AI/tech news from multiple RS
 - **AI-Powered Selection**: Uses LLM (Gemini) to rank and select best articles
 - **Content Extraction**: Full article extraction via Jina AI Reader
 - **Template-Based Generation**: 10 predefined post templates with rotation
-- **Multi-Channel Publishing**: Telegram, VK, and Max (Odnoklassniki)
+- **Multi-Channel Publishing**: Telegram and Max (Odnoklassniki)
 - **Admin Dashboard**: Streamlit-based UI for monitoring and configuration
 - **Structured Logging**: JSON logs with correlation IDs
 - **Metrics**: Prometheus metrics for monitoring
@@ -88,8 +88,6 @@ TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_CHAT_ID=your_channel_id
 
 # Optional
-VK_ACCESS_TOKEN=your_vk_token
-VK_GROUP_ID=your_group_id
 MAX_BOT_TOKEN=your_max_token
 MAX_CHAT_ID=your_max_chat_id
 ```

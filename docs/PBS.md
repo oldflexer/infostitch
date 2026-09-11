@@ -23,7 +23,7 @@ The system is divided into the following top‑level subsystems:
   - `Article` – raw article from RSS.
   - `Post` – final published post (including generated text, summary, embedding).
   - `RssSource` – RSS feed configuration.
-  - `Channel` – publishing destination (Telegram, VK, Max, etc.).
+  - `Channel` – publishing destination (Telegram, Max, etc.).
   - `Template` – post style template.
   - `User` – dashboard user.
 - **Value Objects**:
@@ -54,7 +54,6 @@ The system is divided into the following top‑level subsystems:
 - **Content Extractor Client** – Jina AI reader.
 - **Publishing Clients**:
   - `TelegramClient` – sendPhoto, sendMessage.
-  - `VKClient` – upload photo and wall post.
   - `MaxClient` – send message to chat.
 - **Cache Service** – in-memory TTL cache for API responses.
 - **Retry & Circuit Breaker** – for resilient external calls.
@@ -122,7 +121,7 @@ The system is divided into the following top‑level subsystems:
 ┌─────────────▼─────────────┐ ┌─────────────▼─────────────┐
 │ External APIs │ │ SQLite / PostgreSQL │
 │ (Gemini, Jina, Telegram,│ │ (with pgvector ext) │
-│ VK, Max) │ │ │
+│ Max) │ │ │
 └─────────────────────────────┘ └─────────────────────────────┘
 ```
 

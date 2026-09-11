@@ -44,11 +44,6 @@ class Settings(BaseSettings):
     telegram_admin_chat_id: str = Field(
         default="", alias="TELEGRAM_ADMIN_CHAT_ID")
 
-    # VK
-    vk_access_token: str = Field(default="", alias="VK_ACCESS_TOKEN")
-    vk_group_id: str = Field(default="", alias="VK_GROUP_ID")
-    vk_album_id: str = Field(default="", alias="VK_ALBUM_ID")
-
     # Max
     max_bot_token: str = Field(default="", alias="MAX_BOT_TOKEN")
     max_chat_id: str = Field(default="", alias="MAX_CHAT_ID")
@@ -108,13 +103,6 @@ class Settings(BaseSettings):
                 "bot_token_ref": "TELEGRAM_BOT_TOKEN",
             }
 
-        if self.vk_access_token and self.vk_group_id:
-            configs["vk"] = {
-                "group_id": self.vk_group_id,
-                "access_token_ref": "VK_ACCESS_TOKEN",
-                "album_id": self.vk_album_id,
-            }
-
         if self.max_bot_token and self.max_chat_id:
             configs["max"] = {
                 "chat_id": self.max_chat_id,
@@ -147,13 +135,6 @@ class Settings(BaseSettings):
                 publishers_configured += 1
             if not self.telegram_chat_id or self.telegram_chat_id == "your_channel_chat_id_here":
                 missing.append("TELEGRAM_CHAT_ID")
-
-            if not self.vk_access_token or self.vk_access_token == "your_vk_access_token_here":
-                missing.append("VK_ACCESS_TOKEN")
-            else:
-                publishers_configured += 1
-            if not self.vk_group_id or self.vk_group_id == "your_vk_group_id_here":
-                missing.append("VK_GROUP_ID")
 
             if not self.max_bot_token or self.max_bot_token == "your_max_bot_token_here":
                 missing.append("MAX_BOT_TOKEN")

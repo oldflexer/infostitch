@@ -89,7 +89,6 @@ class TestFullPipelineE2E:
     def mock_publisher_clients(self):
         """Mock all publisher clients."""
         with patch("infrastructure.clients.telegram_client.TelegramClient") as mock_tg, \
-                patch("infrastructure.clients.vk_client.VKClient") as mock_vk, \
                 patch("infrastructure.clients.max_client.MaxClient") as mock_max:
 
             mock_tg_instance = MagicMock()
@@ -99,12 +98,6 @@ class TestFullPipelineE2E:
                 return_value={"message_id": 1, "ok": True})
             mock_tg.return_value = mock_tg_instance
 
-            mock_vk_instance = MagicMock()
-            mock_vk_instance.wall_post = AsyncMock(return_value={"post_id": 1})
-            mock_vk_instance.post_with_photo = AsyncMock(
-                return_value={"post_id": 1})
-            mock_vk.return_value = mock_vk_instance
-
             mock_max_instance = MagicMock()
             mock_max_instance.send_message = AsyncMock(
                 return_value={"message_id": 1, "ok": True})
@@ -112,7 +105,7 @@ class TestFullPipelineE2E:
                 return_value={"message_id": 1, "ok": True})
             mock_max.return_value = mock_max_instance
 
-            yield mock_tg_instance, mock_vk_instance, mock_max_instance
+            yield mock_tg_instance, mock_max_instance
 
     @pytest.mark.asyncio
     async def test_full_pipeline_dry_run(

@@ -89,8 +89,6 @@ def test_settings(monkeypatch) -> Settings:
     monkeypatch.setenv("JINA_API_KEY", "test-jina-key")
     monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "test-telegram-token")
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "test-chat-id")
-    monkeypatch.setenv("VK_ACCESS_TOKEN", "test-vk-token")
-    monkeypatch.setenv("VK_GROUP_ID", "test-vk-group")
     monkeypatch.setenv("MAX_BOT_TOKEN", "test-max-token")
     monkeypatch.setenv("MAX_CHAT_ID", "test-max-chat")
     monkeypatch.setenv("JACCARD_THRESHOLD", "0.55")
@@ -178,13 +176,6 @@ def mock_telegram_client():
     """Mock Telegram client."""
     from infrastructure.clients.telegram_client import MockTelegramClient
     return MockTelegramClient()
-
-
-@pytest.fixture
-def mock_vk_client():
-    """Mock VK client."""
-    from infrastructure.clients.vk_client import MockVKClient
-    return MockVKClient()
 
 
 @pytest.fixture
@@ -392,7 +383,7 @@ def image_service(mock_jina_client) -> Any:
 
 @pytest.fixture
 def publisher_service(test_settings, mock_telegram_client,
-                      mock_vk_client, mock_max_client) -> Any:
+                      mock_max_client) -> Any:
     """Create PublisherService with test settings and mock clients."""
     from application.services.publisher_service import PublisherService
         # Patch get_settings in both the config module AND the publisher_service module
@@ -421,8 +412,7 @@ def publisher_service(test_settings, mock_telegram_client,
     try:
         print(
             f"DEBUG: Creating PublisherService with clients: telegram={
-                type(mock_telegram_client)}, vk={
-                type(mock_vk_client)}, max={
+                type(mock_telegram_client)}, max={
                 type(mock_max_client)}")
         print(
             f"DEBUG: get_settings in config_module: {
@@ -432,7 +422,6 @@ def publisher_service(test_settings, mock_telegram_client,
                 publisher_module.get_settings}")
         service = PublisherService(
             telegram_client=mock_telegram_client,
-            vk_client=mock_vk_client,
             max_client=mock_max_client,
         )
         print(

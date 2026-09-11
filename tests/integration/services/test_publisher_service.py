@@ -21,9 +21,8 @@ class TestPublisherService:
         )
 
         assert isinstance(result, dict)
-        # In test env, all three mock publishers should be enabled
+        # In test env, telegram and max mock publishers should be enabled
         assert "telegram" in result
-        assert "vk" in result
         assert "max" in result
 
         for channel_result in result.values():
@@ -45,7 +44,6 @@ class TestPublisherService:
 
         assert isinstance(result, dict)
         assert "telegram" in result
-        assert "vk" in result
         assert "max" in result
 
     @pytest.mark.asyncio
@@ -53,9 +51,6 @@ class TestPublisherService:
         """Test getting specific publisher."""
         tg_publisher = publisher_service.get_publisher("telegram")
         assert tg_publisher is not None
-
-        vk_publisher = publisher_service.get_publisher("vk")
-        assert vk_publisher is not None
 
         max_publisher = publisher_service.get_publisher("max")
         assert max_publisher is not None
@@ -69,7 +64,7 @@ class TestPublisherService:
         """Test getting all enabled publishers."""
         publishers = publisher_service.get_enabled_publishers()
         assert isinstance(publishers, list)
-        assert len(publishers) == 3  # telegram, vk, max in test env
+        assert len(publishers) == 2  # telegram, max in test env
 
     @pytest.mark.asyncio
     async def test_close(self, publisher_service):
