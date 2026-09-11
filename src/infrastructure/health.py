@@ -118,13 +118,6 @@ class HealthChecker:
         else:
             checks["telegram"] = "not_configured"
 
-        # VK
-        if self._settings.vk_access_token and self._settings.vk_group_id:
-            checks["vk"] = "configured"
-            configured_count += 1
-        else:
-            checks["vk"] = "not_configured"
-
         # Max
         if self._settings.max_bot_token and self._settings.max_chat_id:
             checks["max"] = "configured"
@@ -138,7 +131,7 @@ class HealthChecker:
         return HealthCheckResult(
             name="publishers",
             status=status,
-            message=f"{configured_count}/3 publishers configured",
+            message=f"{configured_count}/2 publishers configured",
             latency_ms=latency,
             details=checks,
         )
