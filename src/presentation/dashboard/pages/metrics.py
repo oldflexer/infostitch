@@ -121,11 +121,11 @@ def _render_overview_metrics(df: pd.DataFrame) -> None:
     col1, col2, col3, col4, col5 = st.columns(5)
 
     total_posts = len(df)
-    duplicates = df['is_duplicate'].sum(
-    ) if 'is_duplicate' in df.columns else 0
+    duplicates = int(df['is_duplicate'].sum(
+    )) if 'is_duplicate' in df.columns else 0  # type: ignore[return-value]
     unique_posts = total_posts - duplicates
-    channels = df['channel_id'].nunique() if 'channel_id' in df.columns else 0
-    sources = df['source_id'].nunique() if 'source_id' in df.columns else 0
+    channels = int(df['channel_id'].nunique()) if 'channel_id' in df.columns else 0  # type: ignore[return-value]
+    sources = int(df['source_id'].nunique()) if 'source_id' in df.columns else 0  # type: ignore[return-value]
 
     with st.container():
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -141,8 +141,9 @@ def _render_pipeline_charts(df: pd.DataFrame) -> None:
     st.subheader("Pipeline Performance")
 
     # Posts per day
-    daily_counts = df.groupby('date').size().reset_index(name='count')
+    daily_counts = df.groupby('date').size().reset_index(name='count')  # type: ignore[call-arg]
     if px is not None:
+        # type: ignore[arg-type] - pandas DataFrame column types not inferred
         fig = px.line(daily_counts, x='date', y='count',
                       title='Posts Published per Day')
         fig.update_layout(xaxis_title="Date", yaxis_title="Posts")
@@ -155,6 +156,7 @@ def _render_pipeline_charts(df: pd.DataFrame) -> None:
         if 'channel_id' in df.columns and px is not None:
             channel_counts = df['channel_id'].value_counts().reset_index()
             channel_counts.columns = ['channel_id', 'count']
+            # type: ignore[arg-type] - pandas DataFrame column types not inferred
             fig = px.bar(channel_counts, x='channel_id',
                          y='count', title='Posts by Channel')
             st.plotly_chart(fig, use_container_width=True)
@@ -164,6 +166,7 @@ def _render_pipeline_charts(df: pd.DataFrame) -> None:
         if 'template_id' in df.columns and px is not None:
             template_counts = df['template_id'].value_counts().reset_index()
             template_counts.columns = ['template_id', 'count']
+            # type: ignore[arg-type] - pandas DataFrame column types not inferred
             fig = px.pie(template_counts, values='count',
                          names='template_id', title='Posts by Template')
             st.plotly_chart(fig, use_container_width=True)
@@ -180,8 +183,9 @@ def _render_article_charts(df: pd.DataFrame) -> None:
         if 'is_duplicate' in df.columns and px is not None:
             dup_counts = df['is_duplicate'].value_counts().reset_index()
             dup_counts.columns = ['is_duplicate', 'count']
-            dup_counts['is_duplicate'] = dup_counts['is_duplicate'].map(
-                {True: 'Duplicate', False: 'Unique'})
+            dup_counts['is_duplicate'] = dup_counts['is_duplicate'].apply(  # type: ignore[return-value]
+                lambda x: 'Duplicate' if x else 'Unique')
+            # type: ignore[arg-type] - pandas DataFrame column types not inferred
             fig = px.pie(
                 dup_counts,
                 values='count',
@@ -194,6 +198,7 @@ def _render_article_charts(df: pd.DataFrame) -> None:
         if 'source_id' in df.columns and px is not None:
             source_counts = df['source_id'].value_counts().reset_index()
             source_counts.columns = ['source_id', 'count']
+            # type: ignore[arg-type] - pandas DataFrame column types not inferred
             fig = px.bar(source_counts, x='source_id',
                          y='count', title='Posts by Source')
             st.plotly_chart(fig, use_container_width=True)
@@ -219,10 +224,11 @@ def _render_deduplication_charts(df: pd.DataFrame) -> None:
     with col2:
         if 'source_id' in df.columns and 'is_duplicate' in df.columns:
             dup_by_source = df.groupby('source_id')[
-                'is_duplicate'].mean().reset_index()
+                'is_duplicate'].mean().reset_index()  # type: ignore[attr-defined]
             dup_by_source.columns = ['source_id', 'duplicate_rate']
             dup_by_source['duplicate_rate'] = dup_by_source['duplicate_rate'] * 100
             if px is not None:
+                # type: ignore[arg-type] - pandas DataFrame column types not inferred
                 fig = px.bar(
                 dup_by_source,
                 x='source_id',
