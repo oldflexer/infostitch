@@ -140,7 +140,6 @@
 | gemini_client.py | Dict/list unknown, __call__ signature | Add generics |
 | jina_client.py | Dict unknown, __call__ signature | Add generics |
 | max_client.py | Dict/list unknown, __call__ signature | Add generics |
-| vk_client.py | Param types, dict/list unknown | Add type annotations
 
 ### 2.9 src/infrastructure/health.py
 | Line | Issue | Fix |

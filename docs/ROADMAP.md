@@ -19,7 +19,7 @@
 ### Iteration 1: Core Pipeline (Weeks 2–3)
 **Goal**: End-to-end pipeline with mock clients.
 
-- Implement all infrastructure clients (Gemini, Jina, Telegram, VK, Max) – initially with mocks.
+- Implement all infrastructure clients (Gemini, Jina, Telegram, Max) – initially with mocks.
 - Implement services (LLM, Embedding, Content, Publisher).
 - Implement each pipeline step (Fetch, Dedup, Select, Extract, Generate, Embed, Dedup2, Publish).
 - Implement Pipeline Orchestrator.
@@ -77,6 +77,6 @@
 ### Iteration 6: Future Enhancements (ongoing)
 - Switch to PostgreSQL+pgvector for faster similarity search.
 - Add more LLM providers (Claude, OpenAI).
-- Add more channels (Twitter, LinkedIn).
+- Add more channels (Twitter/X, LinkedIn).
 - Implement A/B testing for post templates.
 - Add scheduled reports (weekly stats).

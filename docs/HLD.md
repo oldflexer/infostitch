@@ -68,7 +68,7 @@ All layers communicate through interfaces (Dependency Inversion).
    - **Compute Embedding** → calls Gemini embedding for `title + summary`.
    - **Check Duplicate (stage 2)** → queries DB for most similar post in last 5 days; if similarity > 0.75 → skip publishing, save as duplicate.
    - **Publish** → if not duplicate:
-        - Send to enabled channels (Telegram, VK, Max) with photo if available.
+        - Send to enabled channels (Telegram, Max) with photo if available.
         - Save to `published_posts` with embedding.
         - If publishing fails, log error and continue (graceful degradation).
 

@@ -43,7 +43,6 @@ infostitch/
 │   │   │   ├── gemini_client.py
 │   │   │   ├── jina_client.py
 │   │   │   ├── telegram_client.py
-│   │   │   ├── vk_client.py
 │   │   │   └── max_client.py
 │   │   ├── cache/                # кэширование
 │   │   │   └── cache_service.py

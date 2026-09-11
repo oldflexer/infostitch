@@ -19,7 +19,7 @@
 - 3.1. LLM Service abstraction + Gemini implementation.
 - 3.2. Embedding Service (uses LLM service or direct HTTP).
 - 3.3. Content Extractor Service (Jina AI + image extraction logic).
-- 3.4. Publisher Service (interface with methods for each channel).
+- 3.4. Publisher Service (interface with methods for each channel: Telegram, Max).
 - 3.5. Cache Service (in-memory TTL).
 - 3.6. Deduplication Service (URL + Jaccard + embedding similarity).
 
